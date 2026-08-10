@@ -1,15 +1,10 @@
-import { prisma } from "@/lib/prisma";
-
-const paidStatuses = ["paid", "success", "completed"];
-const pendingStatuses = ["created", "active", "pending"];
+// services/adminService.ts
+import {
+  findCatalogOptionsFromDb,
+  findDashboardStatsFromDb,
+} from "@/repositories/adminRepository";
 
 export async function getDashboardStatsAdmin() {
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-
-  const todayEnd = new Date();
-  todayEnd.setHours(23, 59, 59, 999);
-
   const [
     productCount,
     customerCount,
@@ -18,42 +13,7 @@ export async function getDashboardStatsAdmin() {
     pendingOrderCount,
     paidOrders,
     recentOrders,
-  ] = await Promise.all([
-    prisma.product.count(),
-    prisma.customer.count(),
-    prisma.order.count(),
-    prisma.order.count({
-      where: {
-        createdAt: {
-          gte: todayStart,
-          lte: todayEnd,
-        },
-      },
-    }),
-    prisma.order.count({
-      where: {
-        status: { in: pendingStatuses },
-      },
-    }),
-    prisma.order.findMany({
-      where: {
-        status: { in: paidStatuses },
-      },
-      select: { amount: true },
-    }),
-    prisma.order.findMany({
-      take: 5,
-      orderBy: { createdAt: "desc" },
-      include: {
-        customer: {
-          select: {
-            fullName: true,
-            email: true,
-          },
-        },
-      },
-    }),
-  ]);
+  ] = await findDashboardStatsFromDb();
 
   const totalRevenue = paidOrders.reduce(
     (total, order) => total + Number(order.amount),
@@ -86,23 +46,6 @@ export async function getDashboardStatsAdmin() {
 }
 
 export async function getCatalogOptionsAdmin() {
-  const [categories, sizes, colors] = await Promise.all([
-    prisma.category.findMany({
-      where: { isActive: true },
-      orderBy: { name: "asc" },
-      select: { id: true, name: true },
-    }),
-    prisma.size.findMany({
-      where: { isActive: true },
-      orderBy: { name: "asc" },
-      select: { id: true, name: true },
-    }),
-    prisma.color.findMany({
-      where: { isActive: true },
-      orderBy: { name: "asc" },
-      select: { id: true, name: true },
-    }),
-  ]);
-
+  const [categories, sizes, colors] = await findCatalogOptionsFromDb();
   return { categories, sizes, colors };
 }

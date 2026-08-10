@@ -1,11 +1,9 @@
 import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
-import { prisma } from "@/lib/prisma";
+import { findCustomerByEmailFromDb } from "@/repositories/customerRepository";
 
 export async function findCustomerByEmail(email: string) {
-  return await prisma.customer.findUnique({
-    where: { email },
-  });
+  return await findCustomerByEmailFromDb(email);
 }
 
 export async function verifyPassword(password: string, passwordHash: string) {

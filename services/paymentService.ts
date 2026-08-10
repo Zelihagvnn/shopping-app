@@ -1,5 +1,11 @@
+// services/paymentService.ts
 import { createHash, randomInt } from "crypto";
-import { prisma } from "@/lib/prisma";
+import {
+  createOrderFromPaymentInDb,
+  findOrderByMerchantReferenceFromDb,
+  findProductsForPaymentFromDb,
+  updateCustomerAddressFromPaymentInDb,
+} from "@/repositories/paymentRepository";
 
 export interface PaymentCartItem {
   id: string;
@@ -49,7 +55,10 @@ export interface PaymentBody {
   };
 }
 
-export async function callPaythorApi(paymentBody: PaymentBody, requestOrigin: string) {
+export async function callPaythorApi(
+  paymentBody: PaymentBody,
+  requestOrigin: string,
+) {
   if (paymentBody?.payment) {
     if (!paymentBody.payment.return_url) {
       const ref = paymentBody.payment.merchant_reference || "";
@@ -123,10 +132,7 @@ export async function processOrderFromPayment(
     .map((item) => Number(item.id))
     .filter((id) => Number.isInteger(id) && id > 0);
 
-  const databaseProducts = await prisma.product.findMany({
-    where: { id: { in: productIds } },
-    select: { id: true, image: true },
-  });
+  const databaseProducts = await findProductsForPaymentFromDb(productIds);
 
   const productImageMap = new Map(
     databaseProducts.map((product) => [product.id, product.image]),
@@ -140,9 +146,8 @@ export async function processOrderFromPayment(
     throw new Error("Sipariş referansı bulunamadı.");
   }
 
-  const existingOrder = await prisma.order.findUnique({
-    where: { merchantReference },
-  });
+  const existingOrder =
+    await findOrderByMerchantReferenceFromDb(merchantReference);
 
   if (!existingOrder) {
     const firstName =
@@ -173,7 +178,9 @@ export async function processOrderFromPayment(
     const addressState =
       typeof address?.state === "string" ? address.state.trim() : "";
     const postalCode =
-      typeof address?.postal_code === "string" ? address.postal_code.trim() : "";
+      typeof address?.postal_code === "string"
+        ? address.postal_code.trim()
+        : "";
     const country =
       typeof address?.country === "string" ? address.country.trim() : "";
 
@@ -187,54 +194,48 @@ export async function processOrderFromPayment(
       .filter(Boolean)
       .join(", ");
 
-    const newOrder = await prisma.order.create({
-      data: {
-        merchantReference,
-        amount: paymentData.data?.amount ?? paymentBody.payment?.amount ?? 0,
-        currency:
-          paymentData.data?.currency ?? paymentBody.payment?.currency ?? "TRY",
-        status: paymentData.data?.status ?? "active",
-        customerId: session.customerId,
-        customerName: deliveryName,
-        customerEmail,
-        customerPhone,
-        customerAddress,
-        paymentToken: paymentData.data?.payment_token ?? null,
-        paymentLink: paymentData.data?.payment_link ?? null,
-        items: {
-          create: productItems.map((item) => {
-            const productId = Number(item.id);
-            const quantity = Number(item.quantity);
-            const safeQuantity =
-              Number.isInteger(quantity) && quantity > 0 ? quantity : 1;
-            const price = Number(item.price);
+    const itemsData = productItems.map((item) => {
+      const productId = Number(item.id);
+      const quantity = Number(item.quantity);
+      const safeQuantity =
+        Number.isInteger(quantity) && quantity > 0 ? quantity : 1;
+      const price = Number(item.price);
 
-            if (!Number.isFinite(price) || price < 0) {
-              throw new Error(`${item.name} ürünü için geçersiz fiyat.`);
-            }
+      if (!Number.isFinite(price) || price < 0) {
+        throw new Error(`${item.name} ürünü için geçersiz fiyat.`);
+      }
 
-            return {
-              productId:
-                Number.isInteger(productId) && productId > 0 ? productId : null,
-              title: item.name,
-              image: productImageMap.get(productId) ?? null,
-              price: price.toFixed(2),
-              quantity: safeQuantity,
-            };
-          }),
-        },
-      },
-      include: { items: true },
+      return {
+        productId:
+          Number.isInteger(productId) && productId > 0 ? productId : null,
+        title: item.name,
+        image: productImageMap.get(productId) ?? null,
+        price: price.toFixed(2),
+        quantity: safeQuantity,
+      };
     });
 
-    await prisma.customer.update({
-      where: { id: session.customerId },
-      data: {
-        phone: customerPhone || undefined,
-        address: addressLine || undefined,
-        city: addressCity || undefined,
-        postalCode: postalCode || undefined,
-      },
+    const newOrder = await createOrderFromPaymentInDb({
+      merchantReference,
+      amount: paymentData.data?.amount ?? paymentBody.payment?.amount ?? 0,
+      currency:
+        paymentData.data?.currency ?? paymentBody.payment?.currency ?? "TRY",
+      status: paymentData.data?.status ?? "active",
+      customerId: session.customerId,
+      customerName: deliveryName,
+      customerEmail,
+      customerPhone,
+      customerAddress,
+      paymentToken: paymentData.data?.payment_token ?? null,
+      paymentLink: paymentData.data?.payment_link ?? null,
+      items: itemsData,
+    });
+
+    await updateCustomerAddressFromPaymentInDb(session.customerId, {
+      phone: customerPhone || undefined,
+      address: addressLine || undefined,
+      city: addressCity || undefined,
+      postalCode: postalCode || undefined,
     });
 
     return newOrder;
