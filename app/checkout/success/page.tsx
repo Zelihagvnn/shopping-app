@@ -22,8 +22,13 @@ export default function CheckoutSuccessPage({ searchParams }: SearchParamsProps)
   const orderId = params.orderId || "";
   const processId = params.p_id || params.process_id || params.processId || "";
 
-  const { clearCart } = useProductStore();
-  const [refCode, setRefCode] = useState(merchantReference || processId);
+  const [refCode, setRefCode] = useState(() => {
+    if (merchantReference || processId) return merchantReference || processId;
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("lastOrderMerchantReference") || "";
+    }
+    return "";
+  });
 
   // 1. Ödeme tamamlanıp onay sayfasına gelindiğinde iframe dışına çık ve sepeti temizle
   useEffect(() => {
@@ -36,14 +41,7 @@ export default function CheckoutSuccessPage({ searchParams }: SearchParamsProps)
 
   // 2. Sipariş durumunu Paythor ile doğrula ve DB'de 'paid' yap
   useEffect(() => {
-    let activeRef = refCode;
-    if (!activeRef) {
-      const stored = localStorage.getItem("lastOrderMerchantReference");
-      if (stored) {
-        activeRef = stored;
-        setRefCode(stored);
-      }
-    }
+    const activeRef = refCode;
 
     if (activeRef && !activeRef.startsWith("POS-")) {
       fetch("/api/orders/status", {

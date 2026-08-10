@@ -24,7 +24,33 @@ export interface PaythorResponse {
   data?: PaythorPaymentData;
 }
 
-export async function callPaythorApi(paymentBody: any, requestOrigin: string) {
+export interface PaymentBody {
+  payment?: {
+    return_url?: string;
+    merchant_reference?: string;
+    amount?: string | number;
+    currency?: string;
+  };
+  payer?: {
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+    phone?: string;
+    address?: {
+      line_1?: string;
+      city?: string;
+      state?: string;
+      postal_code?: string;
+      country?: string;
+    };
+  };
+  order?: {
+    cart?: PaymentCartItem[];
+  };
+  [key: string]: unknown;
+}
+
+export async function callPaythorApi(paymentBody: PaymentBody, requestOrigin: string) {
   if (paymentBody?.payment) {
     if (!paymentBody.payment.return_url) {
       const ref = paymentBody.payment.merchant_reference || "";
@@ -79,7 +105,7 @@ export async function callPaythorApi(paymentBody: any, requestOrigin: string) {
 }
 
 export async function processOrderFromPayment(
-  paymentBody: any,
+  paymentBody: PaymentBody,
   paymentData: PaythorResponse,
   session: { customerId: number; fullName: string; email: string },
 ) {
