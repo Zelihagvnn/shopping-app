@@ -1,4 +1,3 @@
-// app/backend/entities/order.entity.ts
 
 export interface OrderItemEntity {
   id: number;

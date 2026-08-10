@@ -1,4 +1,3 @@
-// app/backend/dtos/product.dto.ts
 
 export function parseProductBody(body: Record<string, unknown>) {
   const barcode = typeof body.barcode === "string" ? body.barcode.trim() : "";

@@ -1,4 +1,3 @@
-// app/backend/entities/coupon.entity.ts
 
 export interface CouponEntity {
   id: number;

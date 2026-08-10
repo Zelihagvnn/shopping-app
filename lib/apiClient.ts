@@ -1,4 +1,3 @@
-// lib/apiClient.ts
 
 export const apiClient = {
   // Ürünler SDK

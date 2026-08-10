@@ -1,4 +1,3 @@
-// app/backend/repositories/customer.repository.ts
 import { prisma } from "@/lib/prisma";
 
 export async function findCustomerByEmailFromDb(email: string) {

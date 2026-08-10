@@ -1,4 +1,3 @@
-// app/backend/entities/customer.entity.ts
 
 export interface CustomerEntity {
   id: number;

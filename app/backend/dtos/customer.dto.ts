@@ -1,4 +1,3 @@
-// app/backend/dtos/customer.dto.ts
 
 export interface RegisterCustomerDto {
   fullName: string;

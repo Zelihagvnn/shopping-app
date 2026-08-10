@@ -1,4 +1,3 @@
-// app/backend/entities/payment.entity.ts
 
 export interface PaymentCartItemEntity {
   id: string;

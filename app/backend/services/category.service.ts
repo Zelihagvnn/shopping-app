@@ -1,4 +1,3 @@
-// app/backend/services/category.service.ts
 import {
   countProductsByCategoryIdFromDb,
   createCategoryInDb,

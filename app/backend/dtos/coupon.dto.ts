@@ -1,4 +1,3 @@
-// app/backend/dtos/coupon.dto.ts
 
 export function validateCouponInput(data: { code?: string; discount?: number }) {
   if (!data.code) return "Kupon kodu zorunludur.";

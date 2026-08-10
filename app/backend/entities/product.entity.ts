@@ -1,4 +1,3 @@
-// app/backend/entities/product.entity.ts
 
 export interface ProductVariantEntity {
   id: number;

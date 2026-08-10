@@ -1,4 +1,3 @@
-// app/backend/services/admin.service.ts
 import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 import {

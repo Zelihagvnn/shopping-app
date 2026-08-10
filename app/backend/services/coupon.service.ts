@@ -1,4 +1,3 @@
-// app/backend/services/coupon.service.ts
 import {
   deleteCouponFromDb,
   findActivePublicCouponsFromDb,

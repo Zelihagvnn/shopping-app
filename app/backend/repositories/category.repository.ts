@@ -1,4 +1,3 @@
-// app/backend/repositories/category.repository.ts
 import { prisma } from "@/lib/prisma";
 
 export async function findActiveCategoriesFromDb() {

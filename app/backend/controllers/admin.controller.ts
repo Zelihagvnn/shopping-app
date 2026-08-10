@@ -1,4 +1,3 @@
-// app/backend/controllers/admin.controller.ts
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminToken, verifyAdminToken } from "@/lib/adminAuth";
 import {

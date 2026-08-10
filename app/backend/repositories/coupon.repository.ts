@@ -1,4 +1,3 @@
-// app/backend/repositories/coupon.repository.ts
 import { prisma } from "@/lib/prisma";
 
 export async function findActivePublicCouponsFromDb() {

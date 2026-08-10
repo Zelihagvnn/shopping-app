@@ -1,4 +1,3 @@
-// app/backend/services/payment.service.ts
 import { createHash, randomInt } from "crypto";
 import { PaymentBodyDto } from "../dtos/payment.dto";
 import { PaymentCartItemEntity, PaythorResponseEntity } from "../entities/payment.entity";

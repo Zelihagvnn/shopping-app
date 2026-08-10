@@ -1,4 +1,3 @@
-// app/backend/entities/admin.entity.ts
 
 export interface AdminEntity {
   id: number;

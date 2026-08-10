@@ -1,4 +1,3 @@
-// app/backend/dtos/payment.dto.ts
 import { PaymentCartItemEntity } from "../entities/payment.entity";
 
 export interface PaymentBodyDto {

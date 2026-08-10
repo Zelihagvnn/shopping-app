@@ -1,4 +1,3 @@
-// app/backend/controllers/coupon.controller.ts
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminToken } from "@/lib/adminAuth";
 import { validateCouponInput } from "../dtos/coupon.dto";

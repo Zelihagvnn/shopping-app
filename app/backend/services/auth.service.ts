@@ -1,4 +1,3 @@
-// app/backend/services/auth.service.ts
 import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 import { findCustomerByEmailFromDb } from "../repositories/customer.repository";

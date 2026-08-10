@@ -1,4 +1,3 @@
-// app/backend/controllers/payment.controller.ts
 import { createHash, randomInt, randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminToken } from "@/lib/adminAuth";

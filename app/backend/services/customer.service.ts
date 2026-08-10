@@ -1,4 +1,3 @@
-// app/backend/services/customer.service.ts
 import bcrypt from "bcryptjs";
 import { RegisterCustomerDto, UpdateCustomerDto } from "../dtos/customer.dto";
 import {

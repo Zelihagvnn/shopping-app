@@ -1,4 +1,3 @@
-// app/backend/services/product.service.ts
 import { formatProduct } from "@/lib/productCatalog";
 import { parseProductBody, validateProductInput } from "../dtos/product.dto";
 import {

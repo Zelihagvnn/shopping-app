@@ -1,4 +1,3 @@
-// app/backend/entities/category.entity.ts
 
 export interface CategoryEntity {
   id: number;

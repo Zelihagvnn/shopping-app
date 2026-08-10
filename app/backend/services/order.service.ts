@@ -1,4 +1,3 @@
-// app/backend/services/order.service.ts
 import { randomUUID } from "crypto";
 import {
   createPosOrderTransactionInDb,

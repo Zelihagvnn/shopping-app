@@ -1,4 +1,3 @@
-// app/backend/controllers/category.controller.ts
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminToken } from "@/lib/adminAuth";
 import {
