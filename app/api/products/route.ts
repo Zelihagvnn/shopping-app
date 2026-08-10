@@ -35,6 +35,7 @@ function unauthorized() {
   );
 }
 
+// GET - Ürünleri Listele
 export async function GET(request: NextRequest) {
   try {
     const isAdminRequest = request.nextUrl.searchParams.get("admin") === "true";
@@ -55,6 +56,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// POST - Yeni Ürün Ekle
 export async function POST(request: NextRequest) {
   try {
     if (!(await checkAdmin(request))) return unauthorized();
@@ -98,7 +100,10 @@ export async function POST(request: NextRequest) {
       error.code === "P2002"
     ) {
       return NextResponse.json(
-        { status: "error", message: "Bu barkod başka bir üründe kullanılıyor." },
+        {
+          status: "error",
+          message: "Bu barkod başka bir üründe kullanılıyor.",
+        },
         { status: 409 },
       );
     }
@@ -111,6 +116,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// PUT - Ürün Güncelle
 export async function PUT(request: NextRequest) {
   try {
     if (!(await checkAdmin(request))) return unauthorized();
@@ -188,7 +194,10 @@ export async function PUT(request: NextRequest) {
       error.code === "P2002"
     ) {
       return NextResponse.json(
-        { status: "error", message: "Bu barkod başka bir üründe kullanılıyor." },
+        {
+          status: "error",
+          message: "Bu barkod başka bir üründe kullanılıyor.",
+        },
         { status: 409 },
       );
     }
@@ -201,6 +210,7 @@ export async function PUT(request: NextRequest) {
   }
 }
 
+// DELETE - Ürün Sil
 export async function DELETE(request: NextRequest) {
   try {
     if (!(await checkAdmin(request))) return unauthorized();

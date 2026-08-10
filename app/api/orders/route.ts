@@ -1,75 +1,30 @@
-import {
-  NextRequest,
-  NextResponse,
-} from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
 import { verifyCustomerToken } from "@/lib/customerAuth";
+import { getCustomerOrders } from "@/services/orderService";
 
-export async function GET(
-  request: NextRequest
-) {
+export async function GET(request: NextRequest) {
   try {
-    const token =
-      request.cookies.get("customerToken")?.value;
-
-    const session =
-      await verifyCustomerToken(token);
+    const token = request.cookies.get("customerToken")?.value;
+    const session = await verifyCustomerToken(token);
 
     if (!session) {
       return NextResponse.json(
         {
           status: "error",
-          message:
-            "Siparişleri görüntülemek için giriş yapmalısınız.",
+          message: "Siparişleri görüntülemek için giriş yapmalısınız.",
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
-    const orders = await prisma.order.findMany({
-      where: {
-        customerId: session.customerId,
-      },
+    const orders = await getCustomerOrders(session.customerId);
 
-      include: {
-        items: true,
-      },
-
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
-    const formattedOrders = orders.map(
-      (order) => ({
-        ...order,
-
-        amount: Number(order.amount),
-
-        items: order.items.map((item) => ({
-          ...item,
-          price: Number(item.price),
-        })),
-      })
-    );
-
-    return NextResponse.json({
-      status: "success",
-      orders: formattedOrders,
-    });
+    return NextResponse.json({ status: "success", orders });
   } catch (error) {
-    console.error(
-      "Müşteri siparişleri alınırken hata oluştu:",
-      error
-    );
-
+    console.error("Müşteri siparişleri alınırken hata oluştu:", error);
     return NextResponse.json(
-      {
-        status: "error",
-        message:
-          "Siparişler alınırken bir hata oluştu.",
-      },
-      { status: 500 }
+      { status: "error", message: "Siparişler alınarken bir hata oluştu." },
+      { status: 500 },
     );
   }
 }
