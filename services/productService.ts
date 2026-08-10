@@ -9,54 +9,72 @@ import {
   updateProductStatusInDb,
   validateCatalogFromDb,
 } from "@/repositories/productRepository";
-import { parseProductBody, validateProductInput } from "@/validators/productValidator";
-
-export { parseProductBody, validateProductInput };
-
-export async function validateCatalog(
-  categoryId: number | null,
-  sizeIds: number[],
-  colorIds: number[],
-) {
-  return await validateCatalogFromDb(categoryId, sizeIds, colorIds);
-}
+import {
+  parseProductBody,
+  validateProductInput,
+} from "@/validators/productValidator";
 
 export async function getAllProducts(isAdmin: boolean = false) {
   const products = await findProductsFromDb(isAdmin);
   return products.map(formatProduct);
 }
 
-export async function createProduct(
-  input: ReturnType<typeof parseProductBody>,
-) {
+export async function createProduct(body: Record<string, unknown>) {
+  // 1. Doğrulama (Validator)
+  const input = parseProductBody(body);
+  const inputError = validateProductInput(input);
+  if (inputError) throw new Error(inputError);
+
+  // 2. Katalog Kontrolü (Repository)
+  const catalogError = await validateCatalogFromDb(
+    input.categoryId,
+    input.sizeIds,
+    input.colorIds,
+  );
+  if (catalogError) throw new Error(catalogError);
+
+  // 3. Veritabanına Kayıt (Repository)
   const product = await createProductInDb(input);
   return formatProduct(product);
 }
 
-export async function findProductById(id: number) {
-  return await findProductByIdFromDb(id);
-}
+export async function updateProduct(id: number, body: Record<string, unknown>) {
+  const existingProduct = await findProductByIdFromDb(id);
+  if (!existingProduct) throw new Error("Güncellenecek ürün bulunamadı.");
 
-export async function updateProductStatus(id: number, isActive: boolean) {
-  const product = await updateProductStatusInDb(id, isActive);
-  return formatProduct(product);
-}
+  if (body.statusOnly === true && typeof body.isActive === "boolean") {
+    const updatedStatus = await updateProductStatusInDb(id, body.isActive);
+    return formatProduct(updatedStatus);
+  }
 
-export async function updateProduct(
-  id: number,
-  input: ReturnType<typeof parseProductBody>,
-  existingIsActive: boolean,
-  bodyIsActive?: boolean,
-) {
-  const product = await updateProductInDb(
+  const input = parseProductBody(body);
+  const inputError = validateProductInput(input);
+  if (inputError) throw new Error(inputError);
+
+  const catalogError = await validateCatalogFromDb(
+    input.categoryId,
+    input.sizeIds,
+    input.colorIds,
+  );
+  if (catalogError) throw new Error(catalogError);
+
+  const isActive =
+    typeof body.isActive === "boolean"
+      ? body.isActive
+      : existingProduct.isActive;
+
+  const updatedProduct = await updateProductInDb(
     id,
     input,
-    existingIsActive,
-    bodyIsActive,
+    existingProduct.isActive,
+    isActive,
   );
-  return formatProduct(product);
+  return formatProduct(updatedProduct);
 }
 
 export async function deleteProduct(id: number) {
+  const existingProduct = await findProductByIdFromDb(id);
+  if (!existingProduct) throw new Error("Silinecek ürün bulunamadı.");
+
   return await deleteProductFromDb(id);
 }
