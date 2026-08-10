@@ -1,8 +1,6 @@
-import { prisma } from "@/lib/prisma";
+import { findActiveCategoriesFromDb } from "@/repositories/categoryRepository";
 
 export async function getActiveCategories() {
-  return await prisma.category.findMany({
-    where: { isActive: true },
-    orderBy: { name: "asc" },
-  });
+  // Servis katmanı veritabanını bilmez, sadece Repository'yi çağırır
+  return await findActiveCategoriesFromDb();
 }
