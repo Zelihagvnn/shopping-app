@@ -1,4 +1,4 @@
-// services/orderService.ts
+// app/backend/services/order.service.ts
 import { randomUUID } from "crypto";
 import {
   createPosOrderTransactionInDb,
@@ -11,7 +11,7 @@ import {
   processOrderPaidTransactionInDb,
   updateOrderStatusByMerchantReferenceInDb,
   updateOrderStatusInDb,
-} from "@/repositories/orderRepository";
+} from "../repositories/order.repository";
 
 export async function getCustomerOrders(customerId: number) {
   const orders = await findOrdersByCustomerIdFromDb(customerId);

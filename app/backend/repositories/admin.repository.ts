@@ -1,4 +1,4 @@
-// repositories/adminRepository.ts
+// app/backend/repositories/admin.repository.ts
 import { prisma } from "@/lib/prisma";
 
 const paidStatuses = ["paid", "success", "completed"];

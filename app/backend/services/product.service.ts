@@ -1,5 +1,6 @@
-// services/productService.ts
+// app/backend/services/product.service.ts
 import { formatProduct } from "@/lib/productCatalog";
+import { parseProductBody, validateProductInput } from "../dtos/product.dto";
 import {
   createProductInDb,
   deleteProductFromDb,
@@ -11,11 +12,7 @@ import {
   updateProductInDb,
   updateProductStatusInDb,
   validateCatalogFromDb,
-} from "@/repositories/productRepository";
-import {
-  parseProductBody,
-  validateProductInput,
-} from "@/validators/productValidator";
+} from "../repositories/product.repository";
 
 export async function getAllProducts(isAdmin: boolean = false) {
   const products = await findProductsFromDb(isAdmin);

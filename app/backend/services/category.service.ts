@@ -1,4 +1,4 @@
-// services/categoryService.ts
+// app/backend/services/category.service.ts
 import {
   countProductsByCategoryIdFromDb,
   createCategoryInDb,
@@ -7,7 +7,7 @@ import {
   findAllCategoriesFromDb,
   findCategoryByNameOrSlugFromDb,
   updateCategoryStatusInDb,
-} from "@/repositories/categoryRepository";
+} from "../repositories/category.repository";
 
 function createSlug(name: string) {
   return name

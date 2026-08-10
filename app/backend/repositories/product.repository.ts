@@ -1,4 +1,4 @@
-// repositories/productRepository.ts
+// app/backend/repositories/product.repository.ts
 import { prisma } from "@/lib/prisma";
 import {
   createVariantInputs,

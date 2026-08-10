@@ -1,6 +1,7 @@
+// app/backend/services/auth.service.ts
 import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
-import { findCustomerByEmailFromDb } from "@/repositories/customerRepository";
+import { findCustomerByEmailFromDb } from "../repositories/customer.repository";
 
 export async function findCustomerByEmail(email: string) {
   return await findCustomerByEmailFromDb(email);

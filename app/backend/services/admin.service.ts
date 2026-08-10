@@ -1,4 +1,4 @@
-// services/adminService.ts
+// app/backend/services/admin.service.ts
 import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 import {
@@ -6,7 +6,7 @@ import {
   findAdminByIdFromDb,
   findCatalogOptionsFromDb,
   findDashboardStatsFromDb,
-} from "@/repositories/adminRepository";
+} from "../repositories/admin.repository";
 
 export async function getAdminById(id: number) {
   return await findAdminByIdFromDb(id);

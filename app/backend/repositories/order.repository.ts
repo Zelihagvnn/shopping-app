@@ -1,4 +1,4 @@
-// repositories/orderRepository.ts
+// app/backend/repositories/order.repository.ts
 import { prisma } from "@/lib/prisma";
 
 export async function findOrdersByCustomerIdFromDb(customerId: number) {

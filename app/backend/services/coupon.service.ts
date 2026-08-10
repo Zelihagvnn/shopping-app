@@ -1,4 +1,4 @@
-// services/couponService.ts
+// app/backend/services/coupon.service.ts
 import {
   deleteCouponFromDb,
   findActivePublicCouponsFromDb,
@@ -6,7 +6,7 @@ import {
   findCouponByCodeFromDb,
   insertCouponToDb,
   updateCouponStatusInDb,
-} from "@/repositories/couponRepository";
+} from "../repositories/coupon.repository";
 
 export async function getActivePublicCoupons() {
   return await findActivePublicCouponsFromDb();

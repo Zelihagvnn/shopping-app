@@ -1,62 +1,16 @@
-// services/paymentService.ts
+// app/backend/services/payment.service.ts
 import { createHash, randomInt } from "crypto";
+import { PaymentBodyDto } from "../dtos/payment.dto";
+import { PaymentCartItemEntity, PaythorResponseEntity } from "../entities/payment.entity";
 import {
   createOrderFromPaymentInDb,
   findOrderByMerchantReferenceFromDb,
   findProductsForPaymentFromDb,
   updateCustomerAddressFromPaymentInDb,
-} from "@/repositories/paymentRepository";
-
-export interface PaymentCartItem {
-  id: string;
-  name: string;
-  type: "product" | "discount" | "shipping" | "tax";
-  price: string;
-  quantity: number;
-}
-
-export interface PaythorPaymentData {
-  merchant_reference?: string;
-  amount?: string | number;
-  currency?: string;
-  status?: string;
-  payment_token?: string;
-  payment_link?: string;
-}
-
-export interface PaythorResponse {
-  status?: string;
-  message?: string;
-  data?: PaythorPaymentData;
-}
-
-export interface PaymentBody {
-  payment?: {
-    return_url?: string;
-    merchant_reference?: string;
-    amount?: string | number;
-    currency?: string;
-  };
-  payer?: {
-    first_name?: string;
-    last_name?: string;
-    email?: string;
-    phone?: string;
-    address?: {
-      line_1?: string;
-      city?: string;
-      state?: string;
-      postal_code?: string;
-      country?: string;
-    };
-  };
-  order?: {
-    cart?: PaymentCartItem[];
-  };
-}
+} from "../repositories/payment.repository";
 
 export async function callPaythorApi(
-  paymentBody: PaymentBody,
+  paymentBody: PaymentBodyDto,
   requestOrigin: string,
 ) {
   if (paymentBody?.payment) {
@@ -94,7 +48,7 @@ export async function callPaythorApi(
   });
 
   const responseText = await response.text();
-  let paymentData: PaythorResponse;
+  let paymentData: PaythorResponseEntity;
 
   try {
     paymentData = JSON.parse(responseText);
@@ -113,13 +67,13 @@ export async function callPaythorApi(
 }
 
 export async function processOrderFromPayment(
-  paymentBody: PaymentBody,
-  paymentData: PaythorResponse,
+  paymentBody: PaymentBodyDto,
+  paymentData: PaythorResponseEntity,
   session: { customerId: number; fullName: string; email: string },
 ) {
   const payer = paymentBody.payer;
   const address = payer?.address;
-  const allCartItems: PaymentCartItem[] = Array.isArray(paymentBody.order?.cart)
+  const allCartItems: PaymentCartItemEntity[] = Array.isArray(paymentBody.order?.cart)
     ? paymentBody.order.cart
     : [];
 

@@ -1,4 +1,23 @@
-// validators/customerValidator.ts
+// app/backend/dtos/customer.dto.ts
+
+export interface RegisterCustomerDto {
+  fullName: string;
+  email: string;
+  password: string;
+  phone?: string | null;
+  address?: string | null;
+  city?: string | null;
+  postalCode?: string | null;
+}
+
+export interface UpdateCustomerDto {
+  fullName: string;
+  phone?: string | null;
+  address?: string | null;
+  city?: string | null;
+  postalCode?: string | null;
+}
+
 export function validateCustomerRegisterInput(data: {
   fullName?: string;
   email?: string;

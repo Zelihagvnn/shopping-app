@@ -1,4 +1,4 @@
-// repositories/paymentRepository.ts
+// app/backend/repositories/payment.repository.ts
 import { prisma } from "@/lib/prisma";
 
 export async function findProductsForPaymentFromDb(productIds: number[]) {

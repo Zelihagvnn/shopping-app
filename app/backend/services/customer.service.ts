@@ -1,5 +1,6 @@
-// services/customerService.ts
+// app/backend/services/customer.service.ts
 import bcrypt from "bcryptjs";
+import { RegisterCustomerDto, UpdateCustomerDto } from "../dtos/customer.dto";
 import {
   findAllCustomersFromDb,
   findCustomerByEmailFromDb,
@@ -7,31 +8,13 @@ import {
   findCustomerByIdWithOrdersFromDb,
   insertCustomerToDb,
   updateCustomerProfileInDb,
-} from "@/repositories/customerRepository";
-
-export interface RegisterCustomerData {
-  fullName: string;
-  email: string;
-  password: string;
-  phone?: string | null;
-  address?: string | null;
-  city?: string | null;
-  postalCode?: string | null;
-}
-
-export interface UpdateCustomerData {
-  fullName: string;
-  phone?: string | null;
-  address?: string | null;
-  city?: string | null;
-  postalCode?: string | null;
-}
+} from "../repositories/customer.repository";
 
 export async function getCustomerProfile(id: number) {
   return await findCustomerByIdFromDb(id);
 }
 
-export async function registerCustomer(data: RegisterCustomerData) {
+export async function registerCustomer(data: RegisterCustomerDto) {
   const existingCustomer = await findCustomerByEmailFromDb(data.email);
 
   if (existingCustomer) {
@@ -53,7 +36,7 @@ export async function registerCustomer(data: RegisterCustomerData) {
 
 export async function updateCustomerProfile(
   customerId: number,
-  data: UpdateCustomerData,
+  data: UpdateCustomerDto,
 ) {
   return await updateCustomerProfileInDb(customerId, {
     fullName: data.fullName,
