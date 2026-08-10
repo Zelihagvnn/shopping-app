@@ -1,12 +1,8 @@
 // services/orderService.ts
-import { prisma } from "@/lib/prisma";
+import { findOrdersByCustomerIdFromDb } from "@/repositories/orderRepository";
 
 export async function getCustomerOrders(customerId: number) {
-  const orders = await prisma.order.findMany({
-    where: { customerId },
-    include: { items: true },
-    orderBy: { createdAt: "desc" },
-  });
+  const orders = await findOrdersByCustomerIdFromDb(customerId);
 
   return orders.map((order) => ({
     ...order,
