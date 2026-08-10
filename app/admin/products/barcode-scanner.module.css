@@ -1,0 +1,109 @@
+.scanner {
+  margin-bottom: 20px;
+}
+
+.openButton {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1px solid #2563eb;
+  border-radius: 10px;
+  background: rgba(37, 99, 235, 0.14);
+  color: #bfdbfe;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.openButton:hover {
+  background: rgba(37, 99, 235, 0.25);
+}
+
+.error {
+  margin: 8px 0 0;
+  color: #f87171;
+  font-size: 13px;
+}
+
+.success {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(22, 163, 74, 0.14);
+  color: #4ade80;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.overlay {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.82);
+}
+
+.modal {
+  width: min(620px, 100%);
+  overflow: hidden;
+  border: 1px solid #333;
+  border-radius: 18px;
+  background: #0d0d0d;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.55);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px;
+}
+
+.modalHeader h3,
+.modalHeader p {
+  margin: 0;
+}
+
+.modalHeader p {
+  margin-top: 6px;
+  color: #999;
+  font-size: 13px;
+}
+
+.modalHeader button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #444;
+  border-radius: 50%;
+  background: #181818;
+  color: white;
+  font-size: 25px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.cameraArea {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: black;
+}
+
+.cameraArea video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.guide {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 78%;
+  height: 34%;
+  border: 3px solid #22c55e;
+  border-radius: 12px;
+  box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.32);
+  transform: translate(-50%, -50%);
+}

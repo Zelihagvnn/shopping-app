@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Admin {
+  id           Int      @id @default(autoincrement())
+  fullName     String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("admin")
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Order {
+  id                Int         @id @default(autoincrement())
+  merchantReference String      @unique
+  amount            Decimal     @db.Decimal(10, 2)
+  currency          String      @default("TRY")
+  status            String      @default("created")
+  customerName      String
+  customerEmail     String
+  customerPhone     String
+  customerAddress   String
+  paymentToken      String?
+  paymentLink       String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  customerId        Int?
+  customer          Customer?   @relation(fields: [customerId], references: [id])
+  items             OrderItem[]
+}
+
+model Product {
+  id          Int              @id @default(autoincrement())
+  title       String
+  description String?
+  price       Decimal          @db.Decimal(10, 2)
+  image       String
+  isActive    Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  categoryId  Int?
+  barcode     String?          @unique
+  orderItems  OrderItem[]
+  category    Category?        @relation(fields: [categoryId], references: [id])
+  variants    ProductVariant[]
+
+  @@index([categoryId])
+}
+
+model OrderItem {
+  id            Int             @id @default(autoincrement())
+  orderId       Int
+  productId     Int?
+  title         String
+  image         String?
+  price         Decimal         @db.Decimal(10, 2)
+  quantity      Int
+  variantId     Int?
+  selectedSize  String?
+  selectedColor String?
+  order         Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product       Product?        @relation(fields: [productId], references: [id])
+  variant       ProductVariant? @relation(fields: [variantId], references: [id])
+
+  @@index([productId])
+  @@index([variantId])
+}
+
+model Customer {
+  id           Int      @id @default(autoincrement())
+  fullName     String
+  email        String   @unique
+  passwordHash String
+  phone        String?
+  address      String?
+  city         String?
+  postalCode   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  orders       Order[]
+}
+
+model Coupon {
+  id             Int       @id @default(autoincrement())
+  code           String    @unique
+  discount       Int
+  expirationDate DateTime?
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  slug      String    @unique
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
+}
+
+model Size {
+  id        Int              @id @default(autoincrement())
+  name      String           @unique
+  isActive  Boolean          @default(true)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @default(now()) @updatedAt
+  variants  ProductVariant[]
+}
+
+model Color {
+  id        Int              @id @default(autoincrement())
+  name      String           @unique
+  isActive  Boolean          @default(true)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @default(now()) @updatedAt
+  variants  ProductVariant[]
+}
+
+model ProductVariant {
+  id         Int         @id @default(autoincrement())
+  productId  Int
+  sizeId     Int?
+  colorId    Int?
+  sku        String?     @unique
+  stock      Int         @default(0)
+  isActive   Boolean     @default(true)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @default(now()) @updatedAt
+  orderItems OrderItem[]
+  color      Color?      @relation(fields: [colorId], references: [id], onDelete: Restrict)
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  size       Size?       @relation(fields: [sizeId], references: [id], onDelete: Restrict)
+
+  @@index([productId])
+  @@index([sizeId])
+  @@index([colorId])
+}

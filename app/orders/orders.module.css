@@ -1,0 +1,312 @@
+.page {
+  min-height: calc(100vh - 76px);
+  padding: 42px 24px 60px;
+  color: #f5f5f5;
+  background: #111214;
+}
+
+.pageHeader {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.pageHeader h1 {
+  margin: 6px 0 10px;
+  color: #ffffff;
+  font-size: 36px;
+  line-height: 1.15;
+}
+
+.pageHeader p {
+  margin: 0;
+  color: #999ca5;
+  line-height: 1.6;
+}
+
+.eyebrow {
+  margin: 0 !important;
+  color: #3b82f6 !important;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.backButton,
+.shoppingLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 11px 16px;
+
+  color: #ffffff;
+  background: #1b1c1f;
+
+  border: 1px solid #34363c;
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.backButton:hover,
+.shoppingLink:hover {
+  background: #25272b;
+  border-color: #4a4d55;
+  transform: translateY(-1px);
+}
+
+.infoCard {
+  width: 100%;
+  max-width: 1100px;
+  margin: 30px auto;
+  padding: 45px 28px;
+
+  color: #a1a1aa;
+  background: #1b1c1f;
+
+  border: 1px solid #2d2f34;
+  border-radius: 16px;
+
+  text-align: center;
+}
+
+.infoCard h2 {
+  margin: 0 0 12px;
+  color: #ffffff;
+  font-size: 22px;
+}
+
+.infoCard p {
+  margin: 0 0 22px;
+  line-height: 1.6;
+}
+
+.orderList {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.orderCard {
+  overflow: hidden;
+
+  background: #1b1c1f;
+  border: 1px solid #2d2f34;
+  border-radius: 16px;
+
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.2);
+}
+
+.orderHeader {
+  padding: 23px 26px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+
+  background: #18191c;
+  border-bottom: 1px solid #2d2f34;
+}
+
+.orderHeader h2 {
+  margin: 6px 0;
+  color: #ffffff;
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+.orderHeader p,
+.label {
+  margin: 0;
+  color: #898c95;
+  font-size: 13px;
+}
+
+.orderSummary {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 11px;
+  flex-shrink: 0;
+}
+
+.orderSummary strong {
+  color: #ffffff;
+  font-size: 21px;
+}
+
+.status {
+  padding: 7px 11px;
+
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.statusSuccess {
+  color: #bbf7d0;
+  background: rgba(22, 101, 52, 0.35);
+  border: 1px solid #166534;
+}
+
+.statusPending {
+  color: #fde68a;
+  background: rgba(133, 77, 14, 0.3);
+  border: 1px solid #854d0e;
+}
+
+.statusFailed {
+  color: #fecaca;
+  background: rgba(153, 27, 27, 0.3);
+  border: 1px solid #991b1b;
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  padding: 18px 26px;
+
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  border-bottom: 1px solid #292b30;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.imageArea {
+  width: 76px;
+  height: 76px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  overflow: hidden;
+
+  color: #111111;
+  background: #ffffff;
+
+  border-radius: 12px;
+
+  font-size: 28px;
+}
+
+.imageArea img {
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+
+  object-fit: contain;
+}
+
+.itemInfo {
+  min-width: 0;
+  flex: 1;
+}
+
+.itemInfo h3 {
+  margin: 0 0 8px;
+
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.itemInfo p {
+  margin: 3px 0;
+  color: #999ca5;
+  font-size: 13px;
+}
+
+.item > strong {
+  color: #ffffff;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.noItems {
+  padding: 25px 26px;
+  color: #8f929b;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 28px 14px 45px;
+  }
+
+  .pageHeader,
+  .orderHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .pageHeader h1 {
+    font-size: 30px;
+  }
+
+  .orderSummary {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .item {
+    align-items: flex-start;
+    padding: 16px;
+  }
+
+  .imageArea {
+    width: 62px;
+    height: 62px;
+  }
+
+  .item > strong {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 500px) {
+  .item {
+    flex-wrap: wrap;
+  }
+
+  .itemInfo {
+    min-width: calc(100% - 80px);
+  }
+
+  .item > strong {
+    width: 100%;
+    padding-left: 80px;
+    text-align: right;
+  }
+}

@@ -1,0 +1,334 @@
+.page {
+  width: 100%;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+
+  margin-bottom: 30px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+
+  color: #3b82f6;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.pageHeader h1 {
+  margin: 0 0 10px;
+
+  color: #ffffff;
+  font-size: 38px;
+}
+
+.description {
+  margin: 0;
+
+  color: #929292;
+  line-height: 1.6;
+}
+
+.refreshButton {
+  min-width: 110px;
+  height: 46px;
+  padding: 0 18px;
+
+  border: 1px solid #343434;
+  border-radius: 10px;
+
+  background: #151515;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.refreshButton:hover:not(:disabled) {
+  background: #202020;
+}
+
+.refreshButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.toolbar {
+  min-height: 74px;
+  padding: 16px 20px;
+  margin-bottom: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  border: 1px solid #292929;
+  border-radius: 14px;
+
+  background: #111111;
+}
+
+.orderCount {
+  color: #929292;
+  white-space: nowrap;
+}
+
+.orderCount strong {
+  color: #ffffff;
+}
+
+.filters {
+  width: 100%;
+  max-width: 620px;
+
+  display: flex;
+  gap: 12px;
+}
+
+.searchInput,
+.statusSelect {
+  height: 44px;
+  padding: 0 14px;
+
+  border: 1px solid #333333;
+  border-radius: 10px;
+
+  background: #0b0b0b;
+  color: #ffffff;
+
+  font-size: 14px;
+}
+
+.searchInput {
+  width: 100%;
+}
+
+.statusSelect {
+  min-width: 180px;
+}
+
+.searchInput::placeholder {
+  color: #696969;
+}
+
+.searchInput:focus,
+.statusSelect:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.tableWrapper {
+  overflow: hidden;
+
+  border: 1px solid #292929;
+  border-radius: 14px;
+
+  background: #101010;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 18px 20px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table th {
+  color: #858585;
+  background: #151515;
+
+  border-bottom: 1px solid #292929;
+
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.table td {
+  color: #d4d4d4;
+
+  border-bottom: 1px solid #242424;
+
+  font-size: 14px;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: #151515;
+}
+
+.reference {
+  color: #ffffff;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.customerCell {
+  min-width: 170px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.customerCell strong {
+  color: #ffffff;
+}
+
+.customerCell span {
+  color: #858585;
+  font-size: 13px;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 30px;
+  padding: 0 11px;
+
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.statusPaid {
+  color: #bbf7d0;
+  background: rgba(22, 101, 52, 0.3);
+  border: 1px solid #166534;
+}
+
+.statusPending {
+  color: #fde68a;
+  background: rgba(133, 77, 14, 0.3);
+  border: 1px solid #854d0e;
+}
+
+.statusFailed {
+  color: #fecaca;
+  background: rgba(153, 27, 27, 0.3);
+  border: 1px solid #991b1b;
+}
+
+.amount {
+  color: #22c55e;
+  white-space: nowrap;
+}
+
+.detailLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 36px;
+  padding: 0 13px;
+
+  border: 1px solid #343434;
+  border-radius: 9px;
+
+  background: #191919;
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.detailLink:hover {
+  background: #242424;
+}
+
+.infoCard,
+.errorCard {
+  padding: 42px 24px;
+
+  border: 1px solid #292929;
+  border-radius: 14px;
+
+  background: #111111;
+  color: #949494;
+
+  text-align: center;
+}
+
+.errorCard {
+  color: #fecaca;
+  border-color: #5b2020;
+  background: #251111;
+}
+
+.errorCard p {
+  margin: 0 0 16px;
+}
+
+.errorCard button {
+  min-height: 42px;
+  padding: 0 16px;
+
+  border: 1px solid #713030;
+  border-radius: 9px;
+
+  background: #371717;
+  color: #ffffff;
+
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.noResult {
+  padding: 34px;
+
+  color: #858585;
+  text-align: center;
+}
+
+@media (max-width: 1050px) {
+  .tableWrapper {
+    overflow-x: auto;
+  }
+
+  .table {
+    min-width: 1050px;
+  }
+}
+
+@media (max-width: 750px) {
+  .pageHeader,
+  .toolbar,
+  .filters {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .filters {
+    max-width: none;
+  }
+
+  .statusSelect {
+    width: 100%;
+  }
+}
+
+@media (max-width: 500px) {
+  .pageHeader h1 {
+    font-size: 30px;
+  }
+}

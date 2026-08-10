@@ -1,0 +1,364 @@
+.page {
+  color: #fff;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  max-width: 1250px;
+  margin: 0 auto 28px;
+}
+.header h1 {
+  margin: 4px 0 8px;
+  font-size: 38px;
+}
+.header > div > p:last-child {
+  margin: 0;
+  color: #999;
+}
+.eyebrow {
+  margin: 0;
+  color: #60a5fa;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+}
+.totalBadge {
+  min-width: 190px;
+  padding: 16px 20px;
+  border: 1px solid #2f3d55;
+  border-radius: 14px;
+  background: #101827;
+  text-align: right;
+}
+.totalBadge span,
+.totalBadge strong {
+  display: block;
+}
+.totalBadge span {
+  color: #94a3b8;
+  font-size: 13px;
+}
+.totalBadge strong {
+  margin-top: 5px;
+  color: #4ade80;
+  font-size: 23px;
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 410px) 1fr;
+  gap: 24px;
+  max-width: 1250px;
+  margin: 0 auto;
+  align-items: start;
+}
+.scannerCard,
+.cartCard {
+  border: 1px solid #2d2d2d;
+  border-radius: 18px;
+  background: #0d0d0d;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+}
+.scannerCard {
+  padding: 26px;
+}
+.scannerCard h2,
+.cartCard h2 {
+  margin: 0;
+}
+.scannerCard > p {
+  margin: 8px 0 22px;
+  color: #999;
+  line-height: 1.5;
+}
+.barcodeForm {
+  display: grid;
+  gap: 9px;
+  margin: 20px 0;
+  padding: 16px;
+  border: 1px solid #2f2f2f;
+  border-radius: 12px;
+  background: #111;
+}
+.barcodeForm label {
+  color: #d4d4d8;
+  font-size: 13px;
+  font-weight: 700;
+}
+.barcodeForm > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+.barcodeForm input {
+  min-width: 0;
+  padding: 12px 13px;
+  border: 1px solid #3f3f46;
+  border-radius: 9px;
+  outline: none;
+  background: #080808;
+  color: #fff;
+  font-size: 16px;
+}
+.barcodeForm input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+.barcodeForm button {
+  padding: 0 16px;
+  border: 0;
+  border-radius: 9px;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 750;
+  cursor: pointer;
+}
+.barcodeForm button:disabled,
+.barcodeForm input:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.barcodeForm small {
+  color: #71717a;
+  line-height: 1.4;
+}
+.info,
+.success,
+.error {
+  margin: 12px 0 0;
+  padding: 11px 13px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.info {
+  background: #172033;
+  color: #bfdbfe;
+}
+.success {
+  background: rgba(22, 163, 74, 0.14);
+  color: #4ade80;
+}
+.error {
+  background: rgba(220, 38, 38, 0.14);
+  color: #f87171;
+}
+.variantPicker {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #292929;
+}
+.pendingProduct {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.pendingProduct img {
+  width: 58px;
+  height: 58px;
+  padding: 5px;
+  border-radius: 10px;
+  background: #fff;
+  object-fit: contain;
+}
+.pendingProduct div,
+.pendingProduct span {
+  display: block;
+}
+.pendingProduct span {
+  margin-top: 5px;
+  color: #4ade80;
+}
+.variantList {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+.variantList button {
+  display: flex;
+  justify-content: space-between;
+  padding: 11px 13px;
+  border: 1px solid #3f3f46;
+  border-radius: 9px;
+  background: #18181b;
+  color: #fff;
+  cursor: pointer;
+}
+.variantList button:hover {
+  border-color: #2563eb;
+}
+.variantList small {
+  color: #a1a1aa;
+}
+.cartCard {
+  overflow: hidden;
+}
+.cartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 26px;
+  border-bottom: 1px solid #292929;
+}
+.cartHeader p {
+  margin: 6px 0 0;
+  color: #888;
+}
+.cartHeader button {
+  padding: 9px 12px;
+  border: 1px solid #7f1d1d;
+  border-radius: 8px;
+  background: rgba(127, 29, 29, 0.2);
+  color: #fca5a5;
+  cursor: pointer;
+}
+.emptyCart {
+  padding: 80px 24px;
+  color: #777;
+  text-align: center;
+}
+.cartList {
+  max-height: 520px;
+  overflow-y: auto;
+}
+.cartItem {
+  display: grid;
+  grid-template-columns: 68px 1fr auto auto;
+  align-items: center;
+  gap: 16px;
+  padding: 17px 24px;
+  border-bottom: 1px solid #242424;
+}
+.cartItem > img {
+  width: 68px;
+  height: 68px;
+  padding: 6px;
+  border-radius: 10px;
+  background: #fff;
+  object-fit: contain;
+}
+.itemInfo strong,
+.itemInfo small,
+.itemInfo span {
+  display: block;
+}
+.itemInfo small {
+  margin-top: 4px;
+  color: #a1a1aa;
+}
+.itemInfo span {
+  margin-top: 7px;
+  color: #4ade80;
+}
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.quantity button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #3f3f46;
+  border-radius: 7px;
+  background: #18181b;
+  color: #fff;
+  cursor: pointer;
+}
+.quantity button:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+.lineTotal {
+  min-width: 100px;
+  text-align: right;
+}
+.lineTotal strong,
+.lineTotal button {
+  display: block;
+  margin-left: auto;
+}
+.lineTotal button {
+  margin-top: 8px;
+  border: 0;
+  background: transparent;
+  color: #f87171;
+  cursor: pointer;
+}
+.checkoutArea {
+  padding: 22px 26px;
+  border-top: 1px solid #303030;
+  background: #111;
+}
+.checkoutArea > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.checkoutArea > div span {
+  color: #aaa;
+}
+.checkoutArea > div strong {
+  color: #4ade80;
+  font-size: 25px;
+}
+.checkoutButton {
+  width: 100%;
+  margin-top: 18px;
+  padding: 14px;
+  border: 0;
+  border-radius: 10px;
+  background: #16a34a;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.checkoutButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.checkoutArea > small {
+  display: block;
+  margin-top: 9px;
+  color: #71717a;
+  text-align: center;
+}
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 650px) {
+  .header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .totalBadge {
+    text-align: left;
+  }
+  .barcodeForm > div {
+    grid-template-columns: 1fr;
+  }
+  .barcodeForm button {
+    min-height: 44px;
+  }
+  .cartItem {
+    grid-template-columns: 58px 1fr;
+  }
+  .cartItem > img {
+    width: 58px;
+    height: 58px;
+  }
+  .quantity,
+  .lineTotal {
+    grid-column: 2;
+  }
+  .lineTotal {
+    text-align: left;
+  }
+  .lineTotal strong,
+  .lineTotal button {
+    margin-left: 0;
+  }
+}

@@ -1,0 +1,15 @@
+.page { display: grid; min-height: calc(100vh - 80px); place-items: center; color: #fff; }
+.card { width: min(560px, 100%); padding: 38px; border: 1px solid #2d2d2d; border-radius: 20px; background: #0d0d0d; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+.icon { display: grid; width: 72px; height: 72px; margin: 0 auto 18px; place-items: center; border-radius: 50%; background: rgba(22,163,74,.16); color: #4ade80; font-size: 36px; }
+.eyebrow { margin: 0; color: #60a5fa !important; font-size: 12px; font-weight: 800; letter-spacing: 1.3px; }
+.card h1 { margin: 7px 0 10px; font-size: 34px; }
+.card > p { color: #999; }
+.card dl { margin: 26px 0; border: 1px solid #292929; border-radius: 12px; overflow: hidden; text-align: left; }
+.card dl div { display: flex; justify-content: space-between; gap: 20px; padding: 13px 15px; border-bottom: 1px solid #292929; }
+.card dl div:last-child { border-bottom: 0; }
+.card dt { color: #999; }
+.card dd { margin: 0; font-weight: 700; overflow-wrap: anywhere; }
+.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.actions a { padding: 13px; border-radius: 9px; background: #2563eb; color: #fff; font-weight: 700; text-decoration: none; }
+.actions a:first-child { background: #16a34a; }
+@media (max-width: 520px) { .card { padding: 28px 20px; } .actions { grid-template-columns: 1fr; } }

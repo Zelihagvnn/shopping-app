@@ -1,0 +1,94 @@
+.container {
+  max-width: 900px;
+  margin: 36px auto;
+  padding: 0 20px;
+}
+
+.backLink {
+  display: inline-block;
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+.card {
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  margin-top: 24px;
+  margin-bottom: 12px;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.infoItem label {
+  display: block;
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 4px;
+}
+
+.infoItem p {
+  margin: 0;
+  font-weight: bold;
+}
+
+.itemRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #333;
+}
+
+.itemRow:last-child {
+  border-bottom: none;
+}
+
+.itemImage {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.itemInfo {
+  flex: 1;
+}
+
+.itemInfo h4 {
+  margin: 0 0 4px;
+}
+
+.itemInfo p {
+  margin: 0;
+  color: #aaa;
+  font-size: 14px;
+}

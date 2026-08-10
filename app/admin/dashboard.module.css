@@ -1,0 +1,312 @@
+.page {
+  width: 100%;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #3b82f6;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.pageHeader h1 {
+  margin: 0 0 10px;
+  color: #ffffff;
+  font-size: 38px;
+}
+
+.description {
+  margin: 0;
+  color: #929292;
+  line-height: 1.6;
+}
+
+.refreshButton {
+  min-width: 110px;
+  height: 46px;
+  padding: 0 18px;
+  border: 1px solid #343434;
+  border-radius: 10px;
+  background: #151515;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.refreshButton:hover:not(:disabled) {
+  background: #202020;
+}
+
+.refreshButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.errorCard {
+  margin-bottom: 18px;
+  padding: 16px 18px;
+  color: #fecaca;
+  background: #251111;
+  border: 1px solid #5b2020;
+  border-radius: 12px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.statCard {
+  min-height: 165px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid #292929;
+  border-radius: 16px;
+  background: #111111;
+  color: #ffffff;
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.statCard:hover {
+  background: #151515;
+  border-color: #3a3a3a;
+  transform: translateY(-2px);
+}
+
+.statLabel {
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+.statValue {
+  color: #ffffff;
+  font-size: 38px;
+}
+
+.pendingValue {
+  color: #f59e0b;
+  font-size: 38px;
+}
+
+.statLink {
+  color: #777777;
+  font-size: 13px;
+}
+
+.revenueCard:hover {
+  transform: none;
+}
+
+.revenueValue {
+  color: #22c55e;
+  font-size: 30px;
+}
+
+.recentCard {
+  overflow: hidden;
+  border: 1px solid #292929;
+  border-radius: 16px;
+  background: #101010;
+}
+
+.cardHeader {
+  min-height: 84px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid #292929;
+  background: #151515;
+}
+
+.cardHeader h2 {
+  margin: 0 0 6px;
+  color: #ffffff;
+  font-size: 19px;
+}
+
+.cardHeader p {
+  margin: 0;
+  color: #858585;
+  font-size: 13px;
+}
+
+.allOrdersLink {
+  min-height: 40px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #343434;
+  border-radius: 9px;
+  background: #191919;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.allOrdersLink:hover {
+  background: #242424;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 17px 20px;
+  text-align: left;
+}
+
+.table th {
+  color: #858585;
+  border-bottom: 1px solid #292929;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.table td {
+  color: #d4d4d4;
+  border-bottom: 1px solid #242424;
+  font-size: 14px;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: #151515;
+}
+
+.customerCell {
+  min-width: 170px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.customerCell strong {
+  color: #ffffff;
+}
+
+.customerCell span {
+  color: #858585;
+  font-size: 12px;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 29px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.statusPaid {
+  color: #bbf7d0;
+  background: rgba(22, 101, 52, 0.3);
+  border: 1px solid #166534;
+}
+
+.statusPending {
+  color: #fde68a;
+  background: rgba(133, 77, 14, 0.3);
+  border: 1px solid #854d0e;
+}
+
+.statusFailed {
+  color: #fecaca;
+  background: rgba(153, 27, 27, 0.3);
+  border: 1px solid #991b1b;
+}
+
+.amount {
+  color: #22c55e;
+  white-space: nowrap;
+}
+
+.detailLink {
+  min-height: 35px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #343434;
+  border-radius: 9px;
+  background: #191919;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.detailLink:hover {
+  background: #242424;
+}
+
+.infoArea {
+  padding: 40px 22px;
+  color: #888888;
+  text-align: center;
+}
+
+@media (max-width: 1200px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .pageHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 500px) {
+  .pageHeader h1 {
+    font-size: 30px;
+  }
+}

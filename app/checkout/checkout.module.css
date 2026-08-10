@@ -1,0 +1,413 @@
+.container {
+  display: grid;
+  grid-template-columns: minmax(520px, 720px) 360px;
+  gap: 36px;
+
+  max-width: 1150px;
+  margin: 50px auto;
+  padding: 0 24px;
+
+  align-items: start;
+  justify-content: center;
+}
+
+.paymentCard,
+.summaryCard {
+  width: 100%;
+  border: 1px solid #333;
+  border-radius: 18px;
+  padding: 34px;
+  background: #0b0b0b;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.paymentCard h1,
+.summaryCard h2 {
+  margin-bottom: 30px;
+}
+
+/* Form alanları */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 22px;
+}
+
+.formGroup label {
+  margin-bottom: 9px;
+  color: #ddd;
+  font-weight: bold;
+}
+
+.formGroup input,
+.formGroup textarea {
+  width: 100%;
+  padding: 15px;
+
+  border: 1px solid #444;
+  border-radius: 10px;
+
+  background-color: #080808 !important;
+  color: white !important;
+
+  font-size: 15px;
+}
+
+.formGroup input::placeholder,
+.formGroup textarea::placeholder {
+  color: #777;
+}
+
+.formGroup textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* Şehir ve posta kodu yan yana */
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.formRow .formGroup {
+  margin-bottom: 22px;
+}
+
+/* Chrome otomatik doldurma rengi */
+.formGroup input:-webkit-autofill,
+.formGroup textarea:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #080808 inset !important;
+  -webkit-text-fill-color: white !important;
+  caret-color: white;
+}
+
+/* Ödeme butonu */
+/* Hata mesajı */
+.errorMessage {
+  margin: 12px 0;
+  color: #ef4444;
+  font-weight: bold;
+}
+
+/* Sipariş özeti */
+.summaryCard {
+  position: sticky;
+  top: 100px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 20px;
+  margin-bottom: 22px;
+
+  color: #ccc;
+}
+
+.summaryRow strong {
+  color: white;
+  font-size: 18px;
+  text-align: right;
+}
+
+.summaryCard hr {
+  margin: 26px 0;
+  border: none;
+  border-top: 1px solid #444;
+}
+
+.totalArea span {
+  color: #ccc;
+}
+
+.totalArea h1 {
+  margin-top: 10px;
+  color: #16a34a;
+  font-size: 42px;
+}
+
+/* Geri dön bağlantısı */
+.backLink {
+  display: block;
+  margin-top: 28px;
+
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+/* Sepet boş ekranı */
+.emptyCard {
+  grid-column: 1 / -1;
+
+  width: 100%;
+  max-width: 620px;
+
+  margin: 60px auto;
+  padding: 36px;
+
+  border: 1px solid #333;
+  border-radius: 18px;
+
+  text-align: center;
+  background: #0b0b0b;
+}
+
+.emptyCard p {
+  margin: 18px 0 28px;
+  color: #ccc;
+}
+
+.backButton {
+  display: inline-block;
+
+  padding: 13px 22px;
+  border-radius: 10px;
+
+  background: #2563eb;
+  color: white;
+
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.backButton:hover {
+  background: #1d4ed8;
+}
+
+/* Modal arka planı */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 28px;
+
+  background: rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(0.5px);
+}
+
+/* Popup kutusu */
+.modalContent {
+  display: flex;
+  flex-direction: column;
+
+  width: min(860px, 80vw);
+  height: min(760px, 82vh);
+
+  max-width: 860px;
+  max-height: 760px;
+
+  overflow: hidden;
+
+  border: 1px solid #333;
+  border-radius: 16px;
+
+  background: #111;
+  box-shadow: 0 24px 65px rgba(0, 0, 0, 0.5);
+
+  animation: popupOpen 0.22s ease;
+}
+
+/* Popup başlığı */
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  flex-shrink: 0;
+
+  padding: 15px 20px;
+  border-bottom: 1px solid #333;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 19px;
+}
+
+/* Kapatma butonu */
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #dc2626;
+  color: white;
+
+  font-size: 17px;
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.closeButton:hover {
+  background: #b91c1c;
+  transform: scale(1.05);
+}
+
+/* Paythor iframe */
+.paymentFrame {
+  flex: 1;
+
+  width: 100%;
+  min-height: 0;
+
+  border: none;
+  background: white;
+}
+
+/* Popup alt alanı */
+.modalFooter {
+  flex-shrink: 0;
+
+  padding: 8px 20px;
+
+  border-top: 1px solid #333;
+  background: #0b0b0b;
+}
+
+.modalFooter p {
+  margin: 0 0 4px;
+  color: #aaa;
+  font-size: 11px;
+}
+
+.externalPaymentLink {
+  color: #3b82f6;
+  font-size: 13px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.externalPaymentLink:hover {
+  text-decoration: underline;
+}
+
+/* Popup açılma animasyonu */
+@keyframes popupOpen {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Tablet görünümü */
+@media (max-width: 900px) {
+  .container {
+    grid-template-columns: 1fr;
+    max-width: 760px;
+  }
+
+  .summaryCard {
+    position: static;
+  }
+
+  .modalContent {
+    width: min(760px, 88vw);
+    height: 78vh;
+  }
+}
+
+/* Telefon görünümü */
+@media (max-width: 700px) {
+  .container {
+    margin: 25px auto;
+    padding: 0 14px;
+  }
+
+  .paymentCard,
+  .summaryCard {
+    padding: 22px;
+  }
+
+  .paymentCard h1,
+  .summaryCard h2 {
+    font-size: 24px;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .totalArea h1 {
+    font-size: 34px;
+  }
+
+  .modalOverlay {
+    padding: 12px;
+  }
+
+  .modalContent {
+    width: 100%;
+    height: 90vh;
+
+    max-width: none;
+    max-height: none;
+
+    border-radius: 12px;
+  }
+
+  .modalHeader {
+    padding: 13px 16px;
+  }
+
+  .modalFooter {
+    padding: 10px 16px;
+  }
+}
+.successMessage {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 9999;
+
+  width: min(520px, calc(100% - 40px));
+  padding: 24px 28px;
+
+  transform: translate(-50%, -50%);
+
+  border: 1px solid #166534;
+  border-radius: 16px;
+
+  background: #0f172a;
+  color: #4ade80;
+
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
