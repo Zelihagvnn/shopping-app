@@ -181,7 +181,7 @@ export async function POST(request: NextRequest) {
     const transactionStatus = paythorData.data?.transaction?.status?.toLowerCase();
     const processStatus = (
       paythorData.data?.process?.process_status ||
-      (paythorData.data?.process as Record<string, unknown>)?.status
+      (paythorData.data?.process as { status?: string; process_status?: string })?.status
     )?.toLowerCase();
     const resultStatus = paythorData.data?.result?.status?.toLowerCase();
     const resultCode = String(paythorData.data?.result?.code ?? "").trim();

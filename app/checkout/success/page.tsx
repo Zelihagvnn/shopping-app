@@ -21,8 +21,9 @@ export default function CheckoutSuccessPage({ searchParams }: SearchParamsProps)
   const merchantReference = params.merchantReference || "";
   const orderId = params.orderId || "";
   const processId = params.p_id || params.process_id || params.processId || "";
+  const { clearCart } = useProductStore();
 
-  const [refCode, setRefCode] = useState(() => {
+  const [refCode] = useState(() => {
     if (merchantReference || processId) return merchantReference || processId;
     if (typeof window !== "undefined") {
       return localStorage.getItem("lastOrderMerchantReference") || "";

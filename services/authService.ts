@@ -1,4 +1,3 @@
-// services/authService.ts
 import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 import { prisma } from "@/lib/prisma";

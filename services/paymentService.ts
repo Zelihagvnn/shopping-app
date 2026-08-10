@@ -47,7 +47,6 @@ export interface PaymentBody {
   order?: {
     cart?: PaymentCartItem[];
   };
-  [key: string]: unknown;
 }
 
 export async function callPaythorApi(paymentBody: PaymentBody, requestOrigin: string) {
@@ -191,7 +190,7 @@ export async function processOrderFromPayment(
     const newOrder = await prisma.order.create({
       data: {
         merchantReference,
-        amount: paymentData.data?.amount ?? paymentBody.payment?.amount,
+        amount: paymentData.data?.amount ?? paymentBody.payment?.amount ?? 0,
         currency:
           paymentData.data?.currency ?? paymentBody.payment?.currency ?? "TRY",
         status: paymentData.data?.status ?? "active",
