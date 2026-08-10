@@ -4,6 +4,19 @@ import { prisma } from "@/lib/prisma";
 const paidStatuses = ["paid", "success", "completed"];
 const pendingStatuses = ["created", "active", "pending"];
 
+export async function findAdminByIdFromDb(id: number) {
+  return await prisma.admin.findUnique({
+    where: { id },
+    select: { id: true, email: true, fullName: true, isActive: true },
+  });
+}
+
+export async function findAdminByEmailFromDb(email: string) {
+  return await prisma.admin.findUnique({
+    where: { email },
+  });
+}
+
 export async function findDashboardStatsFromDb() {
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);

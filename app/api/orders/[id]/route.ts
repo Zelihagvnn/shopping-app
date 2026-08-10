@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { verifyCustomerToken } from "@/lib/customerAuth";
+import { getOrderById } from "@/services/orderService";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const token = request.cookies.get("customerToken")?.value;
@@ -12,54 +12,39 @@ export async function GET(
 
     if (!session) {
       return NextResponse.json(
-        {
-          status: "error",
-          message: "Sipariş detayını görmek için giriş yapmalısınız.",
-        },
-        { status: 401 }
+        { status: "error", message: "Bu işlem için giriş yapmalısınız." },
+        { status: 401 },
       );
     }
 
-    const { id } = await params;
+    const { id } = await context.params;
     const orderId = Number(id);
 
     if (!Number.isInteger(orderId) || orderId <= 0) {
       return NextResponse.json(
-        { status: "error", message: "Geçersiz sipariş ID." },
-        { status: 400 }
+        { status: "error", message: "Geçerli bir sipariş kimliği gönderilmelidir." },
+        { status: 400 },
       );
     }
 
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
-      include: {
-        items: true,
-      },
-    });
+    const order = await getOrderById(orderId, session.customerId);
 
-    if (!order || order.customerId !== session.customerId) {
+    if (!order) {
       return NextResponse.json(
         { status: "error", message: "Sipariş bulunamadı." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     return NextResponse.json({
       status: "success",
-      order: {
-        ...order,
-        amount: Number(order.amount),
-        items: order.items.map((item) => ({
-          ...item,
-          price: Number(item.price),
-        })),
-      },
+      order,
     });
   } catch (error) {
-    console.error("Müşteri sipariş detayı hatası:", error);
+    console.error("Müşteri sipariş detay hatası:", error);
     return NextResponse.json(
-      { status: "error", message: "Sipariş detayı alınamadı." },
-      { status: 500 }
+      { status: "error", message: "Sipariş detayı alınırken bir hata oluştu." },
+      { status: 500 },
     );
   }
 }

@@ -1,37 +1,54 @@
-import { createHash, randomInt } from "crypto";
+import { createHash } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
-
 import { verifyCustomerToken } from "@/lib/customerAuth";
-import { prisma } from "@/lib/prisma";
+import { confirmOrderPaid, getOrderByMerchantRef } from "@/services/orderService";
 
-type PaythorProcessResponse = {
+interface PaythorProcessData {
+  merchant_reference?: string;
+  amount?: string | number;
+  currency?: string;
   status?: string;
-  data?: {
-    transaction?: {
-      status?: string;
-    };
-    process?: {
-      payment_token?: string;
-      process_status?: string;
-      status?: string;
-      amount?: string | number;
-    };
-    result?: {
-      status?: string;
-      code?: string | number;
-    };
+  transaction?: {
+    status?: string;
   };
-};
+  process?: {
+    process_status?: string;
+    status?: string;
+    payment_token?: string;
+    amount?: string | number;
+  };
+  result?: {
+    status?: string;
+    code?: string | number;
+  };
+}
 
-const normalizeMoney = (value: unknown) => {
-  const amount = Number(value);
-  return Number.isFinite(amount) ? amount.toFixed(2) : null;
-};
+interface PaythorProcessResponse {
+  status?: string;
+  message?: string;
+  data?: PaythorProcessData;
+}
+
+function normalizeMoney(val: unknown): string {
+  if (val === null || val === undefined) return "";
+  const num = Number(val);
+  if (!Number.isFinite(num)) return "";
+  return num.toFixed(2);
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const token = request.cookies.get("customerToken")?.value;
+    const session = await verifyCustomerToken(token);
 
+    if (!session) {
+      return NextResponse.json(
+        { status: "error", message: "Oturum açmanız gerekmektedir." },
+        { status: 401 },
+      );
+    }
+
+    const body = await request.json();
     const merchantReference =
       typeof body.merchantReference === "string"
         ? body.merchantReference.trim()
@@ -42,108 +59,67 @@ export async function POST(request: NextRequest) {
 
     if (!merchantReference) {
       return NextResponse.json(
-        {
-          status: "error",
-          message: "Sipariş referansı bulunamadı.",
-        },
+        { status: "error", message: "merchantReference alanı zorunludur." },
         { status: 400 },
       );
     }
 
-    const token = request.cookies.get("customerToken")?.value;
-    const session = await verifyCustomerToken(token);
-
-    if (!session) {
-      return NextResponse.json(
-        {
-          status: "error",
-          message: "Siparişi güncellemek için giriş yapmalısınız.",
-        },
-        { status: 401 },
-      );
-    }
-
-    const existingOrder = await prisma.order.findUnique({
-      where: {
-        merchantReference,
-      },
-      include: {
-        items: true,
-      },
-    });
+    const existingOrder = await getOrderByMerchantRef(merchantReference);
 
     if (!existingOrder) {
       return NextResponse.json(
-        {
-          status: "error",
-          message: "Sipariş bulunamadı.",
-        },
+        { status: "error", message: "Sipariş bulunamadı." },
         { status: 404 },
       );
     }
 
     if (existingOrder.customerId !== session.customerId) {
       return NextResponse.json(
-        {
-          status: "error",
-          message: "Bu siparişi güncelleme yetkiniz yok.",
-        },
+        { status: "error", message: "Bu sipariş için yetkiniz yok." },
         { status: 403 },
       );
     }
 
-    // Aynı postMessage veya yönlendirme tekrar gelirse stok ikinci kez azaltılmaz.
     if (existingOrder.status === "paid") {
       return NextResponse.json({
         status: "success",
-        message: "Sipariş zaten ödendi olarak işaretlenmiş.",
+        message: "Sipariş zaten ödenmiş olarak kayıtlı.",
         order: {
           id: existingOrder.id,
           merchantReference: existingOrder.merchantReference,
+          status: existingOrder.status,
         },
       });
-    }
-
-    const lookupToken = processId || existingOrder.paymentToken || "";
-
-    if (!lookupToken) {
-      return NextResponse.json(
-        {
-          status: "error",
-          message: "Paythor token bilgisi bulunamadı.",
-        },
-        { status: 400 },
-      );
     }
 
     const publicKey = process.env.PAYTHOR_PUBLIC_KEY;
     const secretKey = process.env.PAYTHOR_SECRET_KEY;
 
     if (!publicKey || !secretKey) {
-      return NextResponse.json(
-        {
-          status: "error",
-          message: "Paythor API anahtarları bulunamadı.",
-        },
-        { status: 500 },
-      );
+      throw new Error("PAYTHOR_PUBLIC_KEY veya PAYTHOR_SECRET_KEY eksik.");
     }
 
+    const nonce = String(Math.floor(100000 + Math.random() * 900000));
     const timestamp = (Date.now() / 1000).toFixed(6);
-    const nonce = randomInt(1000000, 10000000).toString();
-    const hashValue = createHash("sha256")
-      .update(`${publicKey}${secretKey}${timestamp}${nonce}`)
-      .digest("hex");
+    const signatureRaw = `${publicKey}${secretKey}${timestamp}${nonce}`;
+    const hash = createHash("sha256").update(signatureRaw).digest("hex");
+    const authorizationHeader = `ApiKeys ${publicKey}:${hash}`;
+
+    const lookupBody = processId
+      ? { process: { process_id: processId } }
+      : { payment: { merchant_reference: merchantReference } };
 
     const paythorResponse = await fetch(
-      `https://api.paythor.com/process/getbytoken/${encodeURIComponent(lookupToken)}`,
+      "https://api.paythor.com/payment/process",
       {
-        method: "GET",
+        method: "POST",
         headers: {
-          Authorization: `ApiKeys ${publicKey}:${hashValue}`,
+          "Content-Type": "application/json",
+          Authorization: authorizationHeader,
           "X-Timestamp": timestamp,
           "X-Nonce": nonce,
         },
+        body: JSON.stringify(lookupBody),
         cache: "no-store",
       },
     );
@@ -155,25 +131,7 @@ export async function POST(request: NextRequest) {
       paythorData = JSON.parse(responseText) as PaythorProcessResponse;
     } catch {
       return NextResponse.json(
-        {
-          status: "error",
-          message: "Paythor ödeme doğrulamasında geçersiz cevap döndürdü.",
-        },
-        { status: 502 },
-      );
-    }
-
-    if (!paythorResponse.ok) {
-      console.warn("Paythor process sorgusu başarısız:", {
-        httpStatus: paythorResponse.status,
-        responseStatus: paythorData.status,
-      });
-
-      return NextResponse.json(
-        {
-          status: "error",
-          message: "Paythor ödeme bilgisi doğrulanamadı.",
-        },
+        { status: "error", message: "Paythor ödeme bilgisi doğrulanamadı." },
         { status: 502 },
       );
     }
@@ -186,16 +144,6 @@ export async function POST(request: NextRequest) {
     const resultStatus = paythorData.data?.result?.status?.toLowerCase();
     const resultCode = String(paythorData.data?.result?.code ?? "").trim();
     const topStatus = paythorData.status?.toLowerCase();
-
-    console.log("Customer Paythor status response:", {
-      ok: paythorResponse.ok,
-      topStatus,
-      transactionStatus,
-      processStatus,
-      resultStatus,
-      resultCode,
-      fullResponse: paythorData,
-    });
 
     const isPaythorSuccess =
       paythorResponse.ok &&
@@ -212,14 +160,6 @@ export async function POST(request: NextRequest) {
       );
 
     if (!isPaythorSuccess) {
-      console.warn("Paythor ödeme durumu başarılı değil:", {
-        responseStatus: paythorData.status,
-        transactionStatus,
-        processStatus,
-        resultStatus,
-        resultCode,
-      });
-
       return NextResponse.json(
         {
           status: "error",
@@ -227,21 +167,6 @@ export async function POST(request: NextRequest) {
         },
         { status: 400 },
       );
-    }
-
-    const verifiedPaymentToken =
-      paythorData.data?.process?.payment_token?.trim() ?? "";
-    const orderPaymentToken = existingOrder.paymentToken?.trim() ?? "";
-
-    if (
-      orderPaymentToken &&
-      verifiedPaymentToken &&
-      verifiedPaymentToken !== orderPaymentToken
-    ) {
-      console.warn("Paythor payment token uyarısı (farklı token):", {
-        orderPaymentToken,
-        verifiedPaymentToken,
-      });
     }
 
     const paythorAmount = normalizeMoney(paythorData.data?.process?.amount);
@@ -257,61 +182,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await prisma.$transaction(async (tx) => {
-      for (const item of existingOrder.items) {
-        if (!item.variantId) {
-          continue;
-        }
-
-        const updatedVariant = await tx.productVariant.updateMany({
-          where: {
-            id: item.variantId,
-            stock: {
-              gte: item.quantity,
-            },
-          },
-          data: {
-            stock: {
-              decrement: item.quantity,
-            },
-          },
-        });
-
-        if (updatedVariant.count !== 1) {
-          throw new Error(`${item.title} ürünü için yeterli stok bulunmuyor.`);
-        }
-      }
-
-      await tx.order.update({
-        where: {
-          id: existingOrder.id,
-        },
-        data: {
-          status: "paid",
-        },
-      });
-    });
+    const updatedOrder = await confirmOrderPaid(existingOrder.id, existingOrder.items);
 
     return NextResponse.json({
       status: "success",
-      message: "Sipariş ödendi olarak güncellendi ve stoklar azaltıldı.",
+      message: "Sipariş durumu ödenmiş olarak güncellendi.",
       order: {
-        id: existingOrder.id,
-        merchantReference: existingOrder.merchantReference,
+        id: updatedOrder.id,
+        merchantReference: updatedOrder.merchantReference,
+        status: updatedOrder.status,
       },
     });
-  } catch (error) {
-    console.error("Sipariş durumu veya stok güncelleme hatası:", error);
-
+  } catch (error: unknown) {
     const message =
-      error instanceof Error ? error.message : "Sipariş durumu güncellenemedi.";
-
-    return NextResponse.json(
-      {
-        status: "error",
-        message,
-      },
-      { status: 500 },
-    );
+      error instanceof Error ? error.message : "Sipariş durumu güncellenirken hata oluştu.";
+    const status = message.includes("stok") ? 409 : 500;
+    return NextResponse.json({ status: "error", message }, { status });
   }
 }

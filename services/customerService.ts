@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import {
   findAllCustomersFromDb,
   findCustomerByEmailFromDb,
+  findCustomerByIdFromDb,
   findCustomerByIdWithOrdersFromDb,
   insertCustomerToDb,
   updateCustomerProfileInDb,
@@ -24,6 +25,10 @@ export interface UpdateCustomerData {
   address?: string | null;
   city?: string | null;
   postalCode?: string | null;
+}
+
+export async function getCustomerProfile(id: number) {
+  return await findCustomerByIdFromDb(id);
 }
 
 export async function registerCustomer(data: RegisterCustomerData) {

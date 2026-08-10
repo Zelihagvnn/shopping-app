@@ -48,6 +48,33 @@ export async function findProductByIdFromDb(id: number) {
   });
 }
 
+export async function findProductFullByIdFromDb(id: number) {
+  return await prisma.product.findUnique({
+    where: { id },
+    include: productCatalogInclude,
+  });
+}
+
+export async function findProductByBarcodeFromDb(barcode: string) {
+  return await prisma.product.findUnique({
+    where: { barcode },
+    include: productCatalogInclude,
+  });
+}
+
+export async function findVariantByBarcodeFromDb(barcode: string) {
+  return await prisma.productVariant.findFirst({
+    where: {
+      OR: [{ sku: barcode }, { product: { barcode } }],
+    },
+    include: {
+      product: true,
+      size: true,
+      color: true,
+    },
+  });
+}
+
 export async function createProductInDb(input: {
   barcode: string | null;
   title: string;

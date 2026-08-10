@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { verifyAdminToken } from "@/lib/adminAuth";
-import { formatProduct, productCatalogInclude } from "@/lib/productCatalog";
+import { getProductByBarcode } from "@/services/productService";
 
 export async function GET(
   request: NextRequest,
@@ -35,10 +34,7 @@ export async function GET(
     );
   }
 
-  const product = await prisma.product.findUnique({
-    where: { barcode },
-    include: productCatalogInclude,
-  });
+  const product = await getProductByBarcode(barcode);
 
   if (!product) {
     return NextResponse.json(
@@ -49,6 +45,6 @@ export async function GET(
 
   return NextResponse.json({
     status: "success",
-    product: formatProduct(product),
+    product,
   });
 }

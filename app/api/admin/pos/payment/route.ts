@@ -1,7 +1,10 @@
 import { createHash, randomInt, randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminToken } from "@/lib/adminAuth";
-import { prisma } from "@/lib/prisma";
+import {
+  createPosPaythorOrderRecord,
+  processPosPaythorPreparation,
+} from "@/services/orderService";
 
 interface PaymentItem {
   variantId: number;
@@ -36,67 +39,9 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const rawItems: PaymentItem[] = Array.isArray(body.items) ? body.items : [];
-    const quantities = new Map<number, number>();
 
-    for (const item of rawItems) {
-      const variantId = Number(item.variantId);
-      const quantity = Number(item.quantity);
-
-      if (
-        !Number.isInteger(variantId) ||
-        variantId <= 0 ||
-        !Number.isInteger(quantity) ||
-        quantity <= 0
-      ) {
-        return NextResponse.json(
-          { status: "error", message: "Sepette geçersiz bir ürün var." },
-          { status: 400 },
-        );
-      }
-
-      quantities.set(variantId, (quantities.get(variantId) ?? 0) + quantity);
-    }
-
-    if (quantities.size === 0) {
-      return NextResponse.json(
-        { status: "error", message: "Satış sepeti boş." },
-        { status: 400 },
-      );
-    }
-
-    const variants = await prisma.productVariant.findMany({
-      where: { id: { in: [...quantities.keys()] } },
-      include: { product: true, size: true, color: true },
-    });
-
-    if (variants.length !== quantities.size) {
-      return NextResponse.json(
-        { status: "error", message: "Sepetteki ürünlerden biri bulunamadı." },
-        { status: 400 },
-      );
-    }
-
-    let total = 0;
-
-    for (const variant of variants) {
-      const quantity = quantities.get(variant.id)!;
-
-      if (!variant.isActive || !variant.product.isActive) {
-        return NextResponse.json(
-          { status: "error", message: `${variant.product.title} satışa açık değil.` },
-          { status: 409 },
-        );
-      }
-
-      if (variant.stock < quantity) {
-        return NextResponse.json(
-          { status: "error", message: `${variant.product.title} için yeterli stok yok.` },
-          { status: 409 },
-        );
-      }
-
-      total += Number(variant.product.price) * quantity;
-    }
+    const { variants, quantities, total } =
+      await processPosPaythorPreparation(rawItems);
 
     const publicKey = process.env.PAYTHOR_PUBLIC_KEY;
     const secretKey = process.env.PAYTHOR_SECRET_KEY;
@@ -211,31 +156,23 @@ export async function POST(request: NextRequest) {
 
     const returnedReference =
       paymentData.data.merchant_reference || merchantReference;
-    const order = await prisma.order.create({
-      data: {
-        merchantReference: returnedReference,
-        amount,
-        currency: "TRY",
-        status: "pending",
-        customerName: "Mağaza Müşterisi",
-        customerEmail: session.email,
-        customerPhone: "-",
-        customerAddress: "Mağazadan teslim",
-        paymentToken: paymentData.data.payment_token,
-        paymentLink: paymentData.data.payment_link,
-        items: {
-          create: variants.map((variant) => ({
-            productId: variant.productId,
-            variantId: variant.id,
-            selectedSize: variant.size?.name ?? null,
-            selectedColor: variant.color?.name ?? null,
-            title: variant.product.title,
-            image: variant.product.image,
-            price: variant.product.price,
-            quantity: quantities.get(variant.id)!,
-          })),
-        },
-      },
+
+    const order = await createPosPaythorOrderRecord({
+      merchantReference: returnedReference,
+      amount,
+      email: session.email,
+      paymentToken: paymentData.data.payment_token,
+      paymentLink: paymentData.data.payment_link,
+      items: variants.map((variant) => ({
+        productId: variant.productId,
+        variantId: variant.id,
+        selectedSize: variant.size?.name ?? null,
+        selectedColor: variant.color?.name ?? null,
+        title: variant.product.title,
+        image: variant.product.image,
+        price: Number(variant.product.price),
+        quantity: quantities.get(variant.id)!,
+      })),
     });
 
     return NextResponse.json({
@@ -246,11 +183,10 @@ export async function POST(request: NextRequest) {
         order_id: order.id,
       },
     });
-  } catch (error) {
-    console.error("POS Paythor ödeme oluşturma hatası:", error);
-    return NextResponse.json(
-      { status: "error", message: "Paythor ödemesi oluşturulamadı." },
-      { status: 500 },
-    );
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "Paythor ödemesi oluşturulamadı.";
+    const status = message.includes("stok") || message.includes("açık değil") ? 409 : 400;
+    return NextResponse.json({ status: "error", message }, { status });
   }
 }

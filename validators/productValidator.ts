@@ -1,5 +1,4 @@
 // validators/productValidator.ts
-import { normalizeIds } from "@/lib/productCatalog";
 
 export function parseProductBody(body: Record<string, unknown>) {
   const barcode = typeof body.barcode === "string" ? body.barcode.trim() : "";

@@ -7,6 +7,21 @@ export async function findCustomerByEmailFromDb(email: string) {
   });
 }
 
+export async function findCustomerByIdFromDb(id: number) {
+  return await prisma.customer.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      fullName: true,
+      email: true,
+      phone: true,
+      address: true,
+      city: true,
+      postalCode: true,
+    },
+  });
+}
+
 export async function insertCustomerToDb(data: {
   fullName: string;
   email: string;

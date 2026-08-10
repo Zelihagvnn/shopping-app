@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { verifyAdminToken } from "@/lib/adminAuth";
-import { getDashboardStatsAdmin } from "@/services/adminService";
+import { getAdminById, getDashboardStatsAdmin } from "@/services/adminService";
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,10 +18,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const admin = await prisma.admin.findUnique({
-      where: { id: session.adminId },
-      select: { id: true, isActive: true },
-    });
+    const admin = await getAdminById(session.adminId);
 
     if (!admin || !admin.isActive) {
       return NextResponse.json(

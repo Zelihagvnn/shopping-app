@@ -1,7 +1,7 @@
 import { createHash, randomInt } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminToken } from "@/lib/adminAuth";
-import { prisma } from "@/lib/prisma";
+import { confirmOrderPaid, getOrderByMerchantRef } from "@/services/orderService";
 
 interface PaythorProcessResponse {
   status?: string;
@@ -18,7 +18,7 @@ interface PaythorProcessResponse {
 
 const money = (value: unknown) => {
   const amount = Number(value);
-  return Number.isFinite(amount) ? amount.toFixed(2) : null;
+  return Number.isFinite(amount) ? amount.toFixed(2) : "";
 };
 
 export async function POST(request: NextRequest) {
@@ -39,27 +39,15 @@ export async function POST(request: NextRequest) {
       typeof body.merchantReference === "string"
         ? body.merchantReference.trim()
         : "";
-    const processId =
-      typeof body.processId === "string" ? body.processId.trim() : "";
 
     if (!merchantReference) {
       return NextResponse.json(
-        { status: "error", message: "Ödeme referansı eksik." },
+        { status: "error", message: "merchantReference zorunludur." },
         { status: 400 },
       );
     }
 
-    if (!merchantReference.startsWith("POS-PAYTHOR-")) {
-      return NextResponse.json(
-        { status: "error", message: "Bu ödeme POS işlemine ait değil." },
-        { status: 403 },
-      );
-    }
-
-    const order = await prisma.order.findUnique({
-      where: { merchantReference },
-      include: { items: true },
-    });
+    const order = await getOrderByMerchantRef(merchantReference);
 
     if (!order) {
       return NextResponse.json(
@@ -71,6 +59,7 @@ export async function POST(request: NextRequest) {
     if (order.status === "paid") {
       return NextResponse.json({
         status: "success",
+        message: "Sipariş zaten ödendi.",
         order: {
           id: order.id,
           merchantReference: order.merchantReference,
@@ -79,21 +68,12 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const lookupToken = processId || order.paymentToken;
-
-    if (!lookupToken) {
-      return NextResponse.json(
-        { status: "error", message: "Paythor ödeme tokenı bulunamadı." },
-        { status: 400 },
-      );
-    }
-
     const publicKey = process.env.PAYTHOR_PUBLIC_KEY;
     const secretKey = process.env.PAYTHOR_SECRET_KEY;
 
     if (!publicKey || !secretKey) {
       return NextResponse.json(
-        { status: "error", message: "Paythor API anahtarları bulunamadı." },
+        { status: "error", message: "Paythor API anahtarları eksik." },
         { status: 500 },
       );
     }
@@ -103,17 +83,18 @@ export async function POST(request: NextRequest) {
     const hash = createHash("sha256")
       .update(`${publicKey}${secretKey}${timestamp}${nonce}`)
       .digest("hex");
-    const paythorResponse = await fetch(
-      `https://api.paythor.com/process/getbytoken/${encodeURIComponent(lookupToken)}`,
-      {
-        headers: {
-          Authorization: `ApiKeys ${publicKey}:${hash}`,
-          "X-Timestamp": timestamp,
-          "X-Nonce": nonce,
-        },
-        cache: "no-store",
+    const paythorResponse = await fetch("https://api.paythor.com/payment/process", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `ApiKeys ${publicKey}:${hash}`,
+        "X-Timestamp": timestamp,
+        "X-Nonce": nonce,
       },
-    );
+      body: JSON.stringify({ payment: { merchant_reference: merchantReference } }),
+      cache: "no-store",
+    });
+
     const responseText = await paythorResponse.text();
     let paythorData: PaythorProcessResponse;
 
@@ -135,17 +116,7 @@ export async function POST(request: NextRequest) {
     const resultCode = String(paythorData.data?.result?.code ?? "").trim();
     const topStatus = paythorData.status?.toLowerCase();
 
-    console.log("POS Paythor status response:", {
-      ok: paythorResponse.ok,
-      topStatus,
-      transactionStatus,
-      processStatus,
-      resultStatus,
-      resultCode,
-      fullResponse: paythorData,
-    });
-
-    const isPaid =
+    const isSuccess =
       paythorResponse.ok &&
       (topStatus === "success" || topStatus === "completed" || topStatus === "approved") &&
       (
@@ -159,22 +130,11 @@ export async function POST(request: NextRequest) {
         resultCode === "0"
       );
 
-    if (!isPaid) {
+    if (!isSuccess) {
       return NextResponse.json(
-        { status: "pending", message: "Ödeme henüz Paythor tarafından onaylanmadı." },
-        { status: 202 },
+        { status: "error", message: "Paythor ödemesi henüz onaylanmadı." },
+        { status: 400 },
       );
-    }
-
-    if (
-      order.paymentToken &&
-      paythorData.data?.process?.payment_token &&
-      paythorData.data.process.payment_token !== order.paymentToken
-    ) {
-      console.warn("POS payment token uyarısı (farklı token):", {
-        orderToken: order.paymentToken,
-        processToken: paythorData.data.process.payment_token,
-      });
     }
 
     if (money(paythorData.data?.process?.amount) !== money(order.amount)) {
@@ -184,34 +144,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const completedOrder = await prisma.$transaction(async (tx) => {
-      const currentOrder = await tx.order.findUnique({
-        where: { id: order.id },
-        include: { items: true },
-      });
-
-      if (!currentOrder) throw new Error("POS siparişi bulunamadı.");
-      if (currentOrder.status === "paid") return currentOrder;
-
-      for (const item of currentOrder.items) {
-        if (!item.variantId) throw new Error(`${item.title} varyantı bulunamadı.`);
-
-        const updated = await tx.productVariant.updateMany({
-          where: { id: item.variantId, stock: { gte: item.quantity } },
-          data: { stock: { decrement: item.quantity } },
-        });
-
-        if (updated.count !== 1) {
-          throw new Error(`${item.title} için yeterli stok yok.`);
-        }
-      }
-
-      return tx.order.update({
-        where: { id: currentOrder.id },
-        data: { status: "paid" },
-        include: { items: true },
-      });
-    });
+    const completedOrder = await confirmOrderPaid(order.id, order.items);
 
     return NextResponse.json({
       status: "success",

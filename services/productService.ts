@@ -3,8 +3,11 @@ import { formatProduct } from "@/lib/productCatalog";
 import {
   createProductInDb,
   deleteProductFromDb,
+  findProductByBarcodeFromDb,
   findProductByIdFromDb,
+  findProductFullByIdFromDb,
   findProductsFromDb,
+  findVariantByBarcodeFromDb,
   updateProductInDb,
   updateProductStatusInDb,
   validateCatalogFromDb,
@@ -19,13 +22,27 @@ export async function getAllProducts(isAdmin: boolean = false) {
   return products.map(formatProduct);
 }
 
+export async function getProductById(id: number) {
+  const product = await findProductFullByIdFromDb(id);
+  if (!product || !product.isActive) return null;
+  return formatProduct(product);
+}
+
+export async function getProductByBarcode(barcode: string) {
+  const product = await findProductByBarcodeFromDb(barcode);
+  if (!product || !product.isActive) return null;
+  return formatProduct(product);
+}
+
+export async function getVariantByBarcode(barcode: string) {
+  return await findVariantByBarcodeFromDb(barcode);
+}
+
 export async function createProduct(body: Record<string, unknown>) {
-  // 1. Doğrulama (Validator)
   const input = parseProductBody(body);
   const inputError = validateProductInput(input);
   if (inputError) throw new Error(inputError);
 
-  // 2. Katalog Kontrolü (Repository)
   const catalogError = await validateCatalogFromDb(
     input.categoryId,
     input.sizeIds,
@@ -33,7 +50,6 @@ export async function createProduct(body: Record<string, unknown>) {
   );
   if (catalogError) throw new Error(catalogError);
 
-  // 3. Veritabanına Kayıt (Repository)
   const product = await createProductInDb(input);
   return formatProduct(product);
 }

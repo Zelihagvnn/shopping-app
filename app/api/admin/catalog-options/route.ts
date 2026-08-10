@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { verifyAdminToken } from "@/lib/adminAuth";
+import { getCatalogOptionsAdmin } from "@/services/adminService";
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,11 +13,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const [categories, sizes, colors] = await Promise.all([
-      prisma.category.findMany({ orderBy: { name: "asc" } }),
-      prisma.size.findMany({ orderBy: { name: "asc" } }),
-      prisma.color.findMany({ orderBy: { name: "asc" } }),
-    ]);
+    const { categories, sizes, colors } = await getCatalogOptionsAdmin();
 
     return NextResponse.json({
       status: "success",
