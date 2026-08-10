@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import { prisma } from "@/lib/prisma";
 import { verifyAdminToken } from "@/lib/adminAuth";
+import { getCustomerByIdAdmin } from "@/services/customerService";
 
 export async function GET(
   request: NextRequest,
@@ -22,13 +22,8 @@ export async function GET(
     }
 
     const admin = await prisma.admin.findUnique({
-      where: {
-        id: session.adminId,
-      },
-      select: {
-        id: true,
-        isActive: true,
-      },
+      where: { id: session.adminId },
+      select: { id: true, isActive: true },
     });
 
     if (!admin || !admin.isActive) {
@@ -54,21 +49,7 @@ export async function GET(
       );
     }
 
-    const customer = await prisma.customer.findUnique({
-      where: {
-        id: customerId,
-      },
-      include: {
-        orders: {
-          orderBy: {
-            createdAt: "desc",
-          },
-          include: {
-            items: true,
-          },
-        },
-      },
-    });
+    const customer = await getCustomerByIdAdmin(customerId);
 
     if (!customer) {
       return NextResponse.json(
@@ -97,11 +78,9 @@ export async function GET(
 
     const totalSpent = customer.orders.reduce((total, order) => {
       const normalizedStatus = order.status.toLowerCase();
-
       if (!paidStatuses.includes(normalizedStatus)) {
         return total;
       }
-
       return total + Number(order.amount);
     }, 0);
 
@@ -124,7 +103,6 @@ export async function GET(
     });
   } catch (error) {
     console.error("Müşteri detay hatası:", error);
-
     return NextResponse.json(
       {
         status: "error",

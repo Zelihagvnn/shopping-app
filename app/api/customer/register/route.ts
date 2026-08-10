@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
+import { registerCustomer } from "@/services/customerService";
 
 interface RegisterBody {
   fullName?: string;
@@ -30,7 +29,7 @@ export async function POST(request: Request) {
           status: "error",
           message: "Ad soyad, e-posta ve şifre zorunludur.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -40,7 +39,7 @@ export async function POST(request: Request) {
           status: "error",
           message: "Geçerli bir e-posta adresi giriniz.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -50,74 +49,39 @@ export async function POST(request: Request) {
           status: "error",
           message: "Şifre en az 6 karakter olmalıdır.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const existingCustomer =
-      await prisma.customer.findUnique({
-        where: {
-          email,
-        },
-      });
-
-    if (existingCustomer) {
-      return NextResponse.json(
-        {
-          status: "error",
-          message:
-            "Bu e-posta adresiyle daha önce kayıt olunmuş.",
-        },
-        { status: 409 }
-      );
-    }
-
-    const passwordHash = await bcrypt.hash(
+    const customer = await registerCustomer({
+      fullName,
+      email,
       password,
-      12
-    );
-
-    const customer = await prisma.customer.create({
-      data: {
-        fullName,
-        email,
-        passwordHash,
-        phone,
-        address,
-        city,
-        postalCode,
-      },
-      select: {
-        id: true,
-        fullName: true,
-        email: true,
-        phone: true,
-        address: true,
-        city: true,
-        postalCode: true,
-        createdAt: true,
-      },
+      phone,
+      address,
+      city,
+      postalCode,
     });
 
     return NextResponse.json(
       {
         status: "success",
-        message:
-          "Müşteri kaydı başarıyla oluşturuldu.",
+        message: "Müşteri kaydı başarıyla oluşturuldu.",
         customer,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Müşteri kayıt hatası:", error);
+    const message =
+      error instanceof Error ? error.message : "Müşteri kaydı sırasında bir hata oluştu.";
 
     return NextResponse.json(
       {
         status: "error",
-        message:
-          "Müşteri kaydı sırasında bir hata oluştu.",
+        message,
       },
-      { status: 500 }
+      { status: message.includes("daha önce kayıt") ? 409 : 500 },
     );
   }
 }

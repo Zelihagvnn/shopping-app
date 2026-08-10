@@ -1,29 +1,9 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getActivePublicCoupons } from "@/services/couponService";
 
 export async function GET() {
   try {
-    const now = new Date();
-
-    const coupons = await prisma.coupon.findMany({
-      where: {
-        isActive: true,
-        OR: [
-          { expirationDate: null },
-          { expirationDate: { gte: now } },
-        ],
-      },
-      select: {
-        id: true,
-        code: true,
-        discount: true,
-        expirationDate: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
+    const coupons = await getActivePublicCoupons();
     return NextResponse.json({
       status: "success",
       coupons,
@@ -32,7 +12,7 @@ export async function GET() {
     console.error("Kupon listeleme hatası:", error);
     return NextResponse.json(
       { status: "error", message: "Kuponlar listelenemedi." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

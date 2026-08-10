@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { validateCouponCode } from "@/services/couponService";
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,41 +9,32 @@ export async function POST(request: NextRequest) {
     if (!code) {
       return NextResponse.json(
         { status: "error", message: "Lütfen bir kupon kodu giriniz." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const coupon = await prisma.coupon.findUnique({
-      where: { code },
-    });
+    const result = await validateCouponCode(code);
 
-    if (!coupon || !coupon.isActive) {
+    if (!result.valid || !result.coupon) {
       return NextResponse.json(
-        { status: "error", message: "Geçersiz kupon kodu." },
-        { status: 404 }
-      );
-    }
-
-    if (coupon.expirationDate && new Date(coupon.expirationDate) < new Date()) {
-      return NextResponse.json(
-        { status: "error", message: "Bu kuponun süresi dolmuş." },
-        { status: 400 }
+        { status: "error", message: result.message },
+        { status: result.message === "Geçersiz kupon kodu." ? 404 : 400 },
       );
     }
 
     return NextResponse.json({
       status: "success",
-      message: `${coupon.code} kuponu uygulandı`,
+      message: `${result.coupon.code} kuponu uygulandı`,
       coupon: {
-        code: coupon.code,
-        discount: coupon.discount,
+        code: result.coupon.code,
+        discount: result.coupon.discount,
       },
     });
   } catch (error) {
     console.error("Kupon doğrulama hatası:", error);
     return NextResponse.json(
       { status: "error", message: "Kupon doğrulanırken hata oluştu." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

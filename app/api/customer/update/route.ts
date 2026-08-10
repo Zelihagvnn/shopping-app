@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { verifyCustomerToken } from "@/lib/customerAuth";
+import { updateCustomerProfile } from "@/services/customerService";
 
 interface ProfileUpdateBody {
   fullName?: string;
@@ -21,7 +21,7 @@ export async function PUT(request: NextRequest) {
           status: "error",
           message: "Profilinizi güncellemek için giriş yapmalısınız.",
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -39,30 +39,16 @@ export async function PUT(request: NextRequest) {
           status: "error",
           message: "Ad soyad alanı zorunludur.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const updatedCustomer = await prisma.customer.update({
-      where: {
-        id: session.customerId,
-      },
-      data: {
-        fullName,
-        phone,
-        address,
-        city,
-        postalCode,
-      },
-      select: {
-        id: true,
-        fullName: true,
-        email: true,
-        phone: true,
-        address: true,
-        city: true,
-        postalCode: true,
-      },
+    const updatedCustomer = await updateCustomerProfile(session.customerId, {
+      fullName,
+      phone,
+      address,
+      city,
+      postalCode,
     });
 
     return NextResponse.json({
@@ -78,7 +64,7 @@ export async function PUT(request: NextRequest) {
         status: "error",
         message: "Profil güncellenirken bir hata oluştu.",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
