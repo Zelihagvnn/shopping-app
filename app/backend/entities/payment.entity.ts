@@ -1,4 +1,3 @@
-
 export interface PaymentCartItemEntity {
   id: string;
   name: string;

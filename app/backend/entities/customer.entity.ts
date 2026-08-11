@@ -1,4 +1,3 @@
-
 export interface CustomerEntity {
   id: number;
   fullName: string;

@@ -1,4 +1,3 @@
-
 export interface ProductVariantEntity {
   id: number;
   productId: number;

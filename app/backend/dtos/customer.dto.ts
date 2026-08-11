@@ -1,4 +1,3 @@
-
 export interface RegisterCustomerDto {
   fullName: string;
   email: string;

@@ -1,4 +1,3 @@
-
 export function parseProductBody(body: Record<string, unknown>) {
   const barcode = typeof body.barcode === "string" ? body.barcode.trim() : "";
   const title = typeof body.title === "string" ? body.title.trim() : "";

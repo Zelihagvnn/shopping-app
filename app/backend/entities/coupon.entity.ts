@@ -1,4 +1,3 @@
-
 export interface CouponEntity {
   id: number;
   code: string;
