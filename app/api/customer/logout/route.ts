@@ -1,20 +1,3 @@
-import { NextResponse } from "next/server";
+import { customerController } from "@/app/backend/controllers/customer.controller";
 
-export async function POST() {
-  const response = NextResponse.json({
-    status: "success",
-    message: "Çıkış yapıldı.",
-  });
-
-  response.cookies.set({
-    name: "customerToken",
-    value: "",
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 0,
-  });
-
-  return response;
-}
+export const POST = customerController.logout;

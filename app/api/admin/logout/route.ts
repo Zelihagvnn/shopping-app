@@ -1,24 +1,3 @@
-import { NextResponse } from "next/server";
+import { adminController } from "@/app/backend/controllers/admin.controller";
 
-export async function POST() {
-  const response = NextResponse.json({
-    status: "success",
-    message: "Admin çıkışı yapıldı.",
-  });
-
-  response.cookies.set(
-    "adminToken",
-    "",
-    {
-      httpOnly: true,
-      secure:
-        process.env.NODE_ENV ===
-        "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 0,
-    }
-  );
-
-  return response;
-}
+export const POST = adminController.logout;

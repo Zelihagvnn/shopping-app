@@ -90,6 +90,25 @@ export const customerController = {
     }
   },
 
+  logout: async () => {
+    const response = NextResponse.json({
+      status: "success",
+      message: "Çıkış yapıldı.",
+    });
+
+    response.cookies.set({
+      name: "customerToken",
+      value: "",
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 0,
+    });
+
+    return response;
+  },
+
   register: async (request: NextRequest) => {
     try {
       const body = await request.json();
