@@ -38,7 +38,11 @@ interface AdminOrderDetail {
   status: string;
   createdAt: string;
   updatedAt: string;
-  customer: OrderCustomer;
+  customer: OrderCustomer | null;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  customerAddress?: string;
   items: OrderItem[];
 }
 
@@ -379,10 +383,7 @@ export default function AdminOrderDetailPage() {
                 <span>Ad Soyad</span>
 
                 <strong>
-                  {
-                    order.customer
-                      .fullName
-                  }
+                  {order.customer?.fullName || order.customerName || "Bilinmeyen Müşteri"}
                 </strong>
               </div>
 
@@ -390,10 +391,7 @@ export default function AdminOrderDetailPage() {
                 <span>E-posta</span>
 
                 <strong>
-                  {
-                    order.customer
-                      .email
-                  }
+                  {order.customer?.email || order.customerEmail || "Eklenmemiş"}
                 </strong>
               </div>
 
@@ -401,9 +399,7 @@ export default function AdminOrderDetailPage() {
                 <span>Telefon</span>
 
                 <strong>
-                  {order.customer
-                    .phone ||
-                    "Eklenmemiş"}
+                  {order.customer?.phone || order.customerPhone || "Eklenmemiş"}
                 </strong>
               </div>
             </div>
@@ -419,9 +415,7 @@ export default function AdminOrderDetailPage() {
                 <span>Adres</span>
 
                 <strong>
-                  {order.customer
-                    .address ||
-                    "Eklenmemiş"}
+                  {order.customer?.address || order.customerAddress || "Eklenmemiş"}
                 </strong>
               </div>
 
@@ -429,9 +423,7 @@ export default function AdminOrderDetailPage() {
                 <span>Şehir</span>
 
                 <strong>
-                  {order.customer
-                    .city ||
-                    "Eklenmemiş"}
+                  {order.customer?.city || "Eklenmemiş"}
                 </strong>
               </div>
 
@@ -439,9 +431,7 @@ export default function AdminOrderDetailPage() {
                 <span>Posta Kodu</span>
 
                 <strong>
-                  {order.customer
-                    .postalCode ||
-                    "Eklenmemiş"}
+                  {order.customer?.postalCode || "Eklenmemiş"}
                 </strong>
               </div>
             </div>

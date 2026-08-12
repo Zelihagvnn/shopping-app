@@ -1,3 +1,4 @@
+// app/backend/repositories/product.repository.ts
 import { prisma } from "@/lib/prisma";
 import {
   createVariantInputs,
@@ -55,16 +56,19 @@ export async function findProductFullByIdFromDb(id: number) {
 }
 
 export async function findProductByBarcodeFromDb(barcode: string) {
-  return await prisma.product.findUnique({
-    where: { barcode },
+  return await prisma.product.findFirst({
+    where: { barcode: { equals: barcode, mode: "insensitive" } },
     include: productCatalogInclude,
   });
 }
 
 export async function findVariantByBarcodeFromDb(barcode: string) {
-  return await prisma.productVariant.findFirst({
+  const variant = await prisma.productVariant.findFirst({
     where: {
-      OR: [{ sku: barcode }, { product: { barcode } }],
+      OR: [
+        { sku: { equals: barcode, mode: "insensitive" } },
+        { product: { barcode: { equals: barcode, mode: "insensitive" } } },
+      ],
     },
     include: {
       product: true,
@@ -72,6 +76,43 @@ export async function findVariantByBarcodeFromDb(barcode: string) {
       color: true,
     },
   });
+
+  if (variant) return variant;
+
+  const product = await prisma.product.findFirst({
+    where: { barcode: { equals: barcode, mode: "insensitive" } },
+    include: {
+      variants: {
+        include: { size: true, color: true },
+      },
+    },
+  });
+
+  if (!product) return null;
+
+  if (product.variants && product.variants.length > 0) {
+    const firstVariant = product.variants[0];
+    return {
+      ...firstVariant,
+      product,
+    };
+  }
+
+  const createdVariant = await prisma.productVariant.create({
+    data: {
+      productId: product.id,
+      stock: 100,
+      isActive: true,
+      sku: product.barcode,
+    },
+    include: {
+      product: true,
+      size: true,
+      color: true,
+    },
+  });
+
+  return createdVariant;
 }
 
 export async function createProductInDb(input: {
