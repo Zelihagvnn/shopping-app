@@ -38,7 +38,11 @@ interface AdminOrderDetail {
   status: string;
   createdAt: string;
   updatedAt: string;
-  customer: OrderCustomer;
+  customer: OrderCustomer | null;
+  customerName?: string | null;
+  customerEmail?: string | null;
+  customerPhone?: string | null;
+  customerAddress?: string | null;
   items: OrderItem[];
 }
 
@@ -234,6 +238,34 @@ export default function AdminOrderDetailPage() {
       0
     );
 
+  const customerName =
+    order.customer?.fullName ||
+    order.customerName ||
+    "POS / Mağaza Müşterisi";
+
+  const customerEmail =
+    order.customer?.email ||
+    order.customerEmail ||
+    "E-posta eklenmemiş";
+
+  const customerPhone =
+    order.customer?.phone ||
+    order.customerPhone ||
+    "Eklenmemiş";
+
+  const customerAddress =
+    order.customer?.address ||
+    order.customerAddress ||
+    "Eklenmemiş";
+
+  const customerCity =
+    order.customer?.city ||
+    "Eklenmemiş";
+
+  const customerPostalCode =
+    order.customer?.postalCode ||
+    "Eklenmemiş";
+
   return (
     <section className={styles.page}>
       <div className={styles.pageHeader}>
@@ -379,10 +411,7 @@ export default function AdminOrderDetailPage() {
                 <span>Ad Soyad</span>
 
                 <strong>
-                  {
-                    order.customer
-                      .fullName
-                  }
+                  {customerName}
                 </strong>
               </div>
 
@@ -390,10 +419,7 @@ export default function AdminOrderDetailPage() {
                 <span>E-posta</span>
 
                 <strong>
-                  {
-                    order.customer
-                      .email
-                  }
+                  {customerEmail}
                 </strong>
               </div>
 
@@ -401,8 +427,7 @@ export default function AdminOrderDetailPage() {
                 <span>Telefon</span>
 
                 <strong>
-                  {order.customer
-                    .phone ||
+                  {customerPhone ||
                     "Eklenmemiş"}
                 </strong>
               </div>
@@ -419,8 +444,7 @@ export default function AdminOrderDetailPage() {
                 <span>Adres</span>
 
                 <strong>
-                  {order.customer
-                    .address ||
+                  {customerAddress ||
                     "Eklenmemiş"}
                 </strong>
               </div>
@@ -429,8 +453,7 @@ export default function AdminOrderDetailPage() {
                 <span>Şehir</span>
 
                 <strong>
-                  {order.customer
-                    .city ||
+                  {customerCity ||
                     "Eklenmemiş"}
                 </strong>
               </div>
@@ -439,8 +462,7 @@ export default function AdminOrderDetailPage() {
                 <span>Posta Kodu</span>
 
                 <strong>
-                  {order.customer
-                    .postalCode ||
+                  {customerPostalCode ||
                     "Eklenmemiş"}
                 </strong>
               </div>

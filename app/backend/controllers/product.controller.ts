@@ -120,6 +120,23 @@ export const productController = {
         );
       }
 
+      const productByBarcode = await getProductByBarcode(barcode);
+
+      if (productByBarcode) {
+        const hasStock = productByBarcode.variants.some(
+          (variant) => variant.isActive && variant.stock > 0,
+        );
+
+        if (!hasStock) {
+          return NextResponse.json(
+            { status: "error", message: "Bu ürün stokta bulunmuyor." },
+            { status: 409 },
+          );
+        }
+
+        return NextResponse.json({ status: "success", product: productByBarcode });
+      }
+
       const variant = await getVariantByBarcode(barcode);
 
       if (!variant || !variant.isActive || !variant.product.isActive) {
@@ -129,20 +146,23 @@ export const productController = {
         );
       }
 
-      return NextResponse.json({
-        status: "success",
-        variant: {
-          id: variant.id,
-          productId: variant.product.id,
-          title: variant.product.title,
-          image: variant.product.image,
-          price: Number(variant.product.price),
-          stock: variant.stock,
-          barcode: variant.product.barcode || variant.sku || "",
-          size: variant.size?.name ?? "",
-          color: variant.color?.name ?? "",
-        },
-      });
+      if (variant.stock <= 0) {
+        return NextResponse.json(
+          { status: "error", message: "Bu varyant stokta bulunmuyor." },
+          { status: 409 },
+        );
+      }
+
+      const productByVariant = await getProductById(variant.productId);
+
+      if (!productByVariant) {
+        return NextResponse.json(
+          { status: "error", message: "Barkoda ait aktif ürün bulunamadı." },
+          { status: 404 },
+        );
+      }
+
+      return NextResponse.json({ status: "success", product: productByVariant });
     } catch (error: unknown) {
       const message =
         error instanceof Error ? error.message : "Ürün bilgisi alınamadı.";

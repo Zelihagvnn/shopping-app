@@ -72,7 +72,9 @@ export default function AdminPosPage() {
       const data = await response.json();
 
       if (!response.ok || !data.product) {
-        setMessage(data.message || "Barkoda ait ürün bulunamadı.");
+        setMessage(
+          `${data.message || "Barkoda ait ürün bulunamadı."} Okunan barkod: ${barcode}`,
+        );
         setMessageType("error");
         return;
       }
