@@ -3,15 +3,31 @@ import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
-const connectionString =
-  process.env.DATABASE_URL ||
-  "postgresql://postgres:postgres@localhost:5432/dummy";
+function getConnectionString() {
+  let url =
+    process.env.DATABASE_URL ||
+    "postgresql://postgres:postgres@localhost:5432/dummy";
+  if (
+    (url.includes("supabase.co") ||
+      url.includes("supabase.com") ||
+      url.includes("neon.tech")) &&
+    !url.includes("sslmode=")
+  ) {
+    url += url.includes("?") ? "&sslmode=require" : "?sslmode=require";
+  }
+  return url;
+}
+
+const connectionString = getConnectionString();
 
 const pool = new Pool({
   connectionString,
   max: 10,
   idleTimeoutMillis: 1000,
   connectionTimeoutMillis: 5000,
+  ssl: connectionString.includes("sslmode=require")
+    ? { rejectUnauthorized: false }
+    : undefined,
 });
 
 const adapter = new PrismaPg(pool);
