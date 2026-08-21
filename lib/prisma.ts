@@ -4,9 +4,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
 function getConnectionString() {
-  let url =
-    process.env.DATABASE_URL ||
-    "postgresql://postgres:postgres@localhost:5432/dummy";
+  let url = process.env.DATABASE_URL || "";
   if (
     (url.includes("supabase.co") ||
       url.includes("supabase.com") ||
