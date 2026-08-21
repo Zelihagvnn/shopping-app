@@ -4,16 +4,24 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
 function getConnectionString() {
-  let url = process.env.DATABASE_URL || "";
-  if (
-    (url.includes("supabase.co") ||
-      url.includes("supabase.com") ||
-      url.includes("neon.tech")) &&
-    !url.includes("sslmode=")
-  ) {
-    url += url.includes("?") ? "&sslmode=require" : "?sslmode=require";
+  const url = process.env.DATABASE_URL;
+  if (!url) {
+    throw new Error(
+      "CRITICAL: Vercel paneline DATABASE_URL eklenmemiş veya Production kutucuğu işaretlenmemiş!"
+    );
   }
-  return url;
+  let formattedUrl = url;
+  if (
+    (formattedUrl.includes("supabase.co") ||
+      formattedUrl.includes("supabase.com") ||
+      formattedUrl.includes("neon.tech")) &&
+    !formattedUrl.includes("sslmode=")
+  ) {
+    formattedUrl += formattedUrl.includes("?")
+      ? "&sslmode=require"
+      : "?sslmode=require";
+  }
+  return formattedUrl;
 }
 
 const connectionString = getConnectionString();
