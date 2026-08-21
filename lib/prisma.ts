@@ -1,35 +1,24 @@
 import "dotenv/config";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
+
+const connectionString =
+  process.env.DATABASE_URL ||
+  "postgresql://postgres:postgres@localhost:5432/dummy";
+
+const adapter = new PrismaPg({
+  connectionString,
+});
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
-  prismaSchemaVersion?: number;
 };
 
-const PRISMA_SCHEMA_VERSION = 2;
-
-export const prisma = (() => {
-  const currentClient = globalForPrisma.prisma as
-    | (PrismaClient & {
-        size?: unknown;
-        color?: unknown;
-        productVariant?: unknown;
-      })
-    | undefined;
-
-  if (
-    !currentClient ||
-    globalForPrisma.prismaSchemaVersion !== PRISMA_SCHEMA_VERSION ||
-    !currentClient.size ||
-    !currentClient.color ||
-    !currentClient.productVariant
-  ) {
-    globalForPrisma.prisma = new PrismaClient();
-    globalForPrisma.prismaSchemaVersion = PRISMA_SCHEMA_VERSION;
-  }
-
-  return globalForPrisma.prisma!;
-})();
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    adapter,
+  });
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
