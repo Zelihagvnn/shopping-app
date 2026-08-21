@@ -27,9 +27,9 @@ const isCloudDb =
 
 const pool = new Pool({
   connectionString,
-  max: 10,
-  idleTimeoutMillis: 1000,
-  connectionTimeoutMillis: 5000,
+  max: 2,
+  idleTimeoutMillis: 500,
+  connectionTimeoutMillis: 3000,
   ...(isCloudDb ? { ssl: { rejectUnauthorized: false } } : {}),
 });
 
