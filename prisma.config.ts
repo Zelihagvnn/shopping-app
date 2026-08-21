@@ -11,6 +11,6 @@ export default defineConfig({
   },
 
   datasource: {
-    url: process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/dummy",
+    url: env("DATABASE_URL"),
   },
 });
