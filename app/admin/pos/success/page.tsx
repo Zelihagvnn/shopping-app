@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import PosSuccessClient from "./PosSuccessClient";
 import styles from "./success.module.css";
 
@@ -32,7 +33,7 @@ export default async function PosSuccessPage({
 
         // Paythor yönlendirmesiyle gelindiyse siparişi ödendi olarak işaretle ve stokları düş
         if (order.status !== "paid") {
-          await prisma.$transaction(async (tx) => {
+          await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
             for (const item of order.items) {
               if (item.variantId) {
                 await tx.productVariant.updateMany({

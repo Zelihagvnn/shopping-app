@@ -78,8 +78,8 @@ export default function AdminPosPage() {
         setMessageType("error");
         return;
       }
-
       const product: Product = {
+        // spread operator
         ...data.product,
         price: Number(data.product.price),
         stock: Number(data.product.stock),
@@ -105,7 +105,9 @@ export default function AdminPosPage() {
     }
   };
 
-  const handleManualBarcodeSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleManualBarcodeSubmit = async (
+    event: FormEvent<HTMLFormElement>,
+  ) => {
     event.preventDefault();
     const barcode = manualBarcode.trim();
 
@@ -146,7 +148,10 @@ export default function AdminPosPage() {
           <h2>Ürün Okut</h2>
           <p>Kamerayı açıp ürün barkodunu çerçevenin içinde tutun.</p>
 
-          <form className={styles.barcodeForm} onSubmit={handleManualBarcodeSubmit}>
+          <form
+            className={styles.barcodeForm}
+            onSubmit={handleManualBarcodeSubmit}
+          >
             <label htmlFor="pos-barcode">USB okuyucu veya manuel barkod</label>
             <div>
               <input
